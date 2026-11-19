@@ -659,8 +659,18 @@
          ========================================================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        // Firebase project configuration (Bloemfontein High School)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDAm3FzmEMDLqzJcbOFYmhCBWKBPgaZCe8",
+            authDomain: "bhs-status-board.firebaseapp.com",
+            databaseURL: "https://bhs-status-board-default-rtdb.firebaseio.com",
+            projectId: "bhs-status-board",
+            storageBucket: "bhs-status-board.firebasestorage.app",
+            messagingSenderId: "889275427363",
+            appId: "1:889275427363:web:45a4a13b31e2454bbe9f96"
+        };
 
         // Bloemfontein High School Leadership & Finance Roster (10 Staff Members)
         const DEFAULT_STAFF = [
@@ -808,8 +818,9 @@
         // Persistence & Cross-Tab Live Sync
         const STORAGE_KEY = 'bhs_leadership_board_v3';
         const syncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('bhs_leadership_sync') : null;
-        let firestoreDocRef = null;
+        let databaseRef = null;
         let isCloudEnabled = false;
+        let applyingCloudUpdate = false;
 
         // Generate clean URL slug from any name
         function createSlug(name) {
@@ -905,45 +916,47 @@
                 }
             });
 
-            // Firebase Firestore Real-Time Cloud Sync (when config is present)
+            // Firebase Realtime Database live cloud sync
             try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const firebaseConfig = JSON.parse(__firebase_config);
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'bloemfontein-high-board';
-                    const app = initializeApp(firebaseConfig);
-                    const auth = getAuth(app);
-                    const db = getFirestore(app);
+                const app = initializeApp(firebaseConfig);
+                const database = getDatabase(app);
+                databaseRef = ref(database, 'bhs_leadership_board/roster_state');
+                isCloudEnabled = true;
 
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-
-                    firestoreDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'bhs_leadership_board', 'roster_state');
-                    isCloudEnabled = true;
-
-                    onSnapshot(firestoreDocRef, (snapshot) => {
-                        if (snapshot.exists()) {
-                            const data = snapshot.data();
-                            if (Array.isArray(data.staff) && data.staff.length > 0) {
-                                staffList = data.staff.map(item => ({
-                                    ...item,
-                                    slug: item.slug || createSlug(item.name)
-                                }));
-                                lastUpdatedId = data.lastUpdatedId || null;
-                                localStorage.setItem(STORAGE_KEY, JSON.stringify(staffList));
-                                renderAll();
-                            }
-                        } else {
-                            setDoc(firestoreDocRef, { staff: staffList, lastUpdatedId: null }).catch(() => {});
+                onValue(databaseRef, async (snapshot) => {
+                    const data = snapshot.val();
+                    if (data && Array.isArray(data.staff) && data.staff.length > 0) {
+                        applyingCloudUpdate = true;
+                        staffList = data.staff.map(item => ({
+                            ...item,
+                            slug: item.slug || createSlug(item.name)
+                        }));
+                        lastUpdatedId = data.lastUpdatedId || null;
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(staffList));
+                        if (!staffList.some(s => s.id === selectedLeaderId)) {
+                            selectedLeaderId = staffList[0].id;
                         }
-                    }, (err) => {
-                        console.warn('Firestore listener fallback to local sync:', err);
-                    });
-                }
+                        renderAll();
+                        applyingCloudUpdate = false;
+                    } else if (!data) {
+                        // First visit: seed the cloud database with the existing roster.
+                        await set(databaseRef, {
+                            staff: staffList,
+                            lastUpdatedId: null,
+                            updatedAt: Date.now()
+                        });
+                    }
+                    updateSyncBadge(true);
+                }, (err) => {
+                    console.error('Realtime Database read failed:', err);
+                    updateSyncBadge(false);
+                    showToast('Cloud sync unavailable. Check Firebase database rules.');
+                });
             } catch (err) {
-                console.info('Running with local multi-tab live sync.');
+                console.error('Firebase initialisation failed:', err);
+                isCloudEnabled = false;
+                updateSyncBadge(false);
+                showToast('Firebase connection could not start. Local mode is still available.');
             }
         }
 
@@ -1044,7 +1057,7 @@
             renderAll();
         };
 
-        // Commit changes to localStorage, BroadcastChannel, and Cloud Firestore
+        // Commit changes to localStorage, BroadcastChannel, and Firebase Realtime Database
         async function commitStaffState(updatedId = null) {
             lastUpdatedId = updatedId;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(staffList));
@@ -1059,15 +1072,18 @@
 
             renderAll();
 
-            if (isCloudEnabled && firestoreDocRef) {
+            if (isCloudEnabled && databaseRef && !applyingCloudUpdate) {
                 try {
-                    await setDoc(firestoreDocRef, {
+                    await set(databaseRef, {
                         staff: staffList,
                         lastUpdatedId: updatedId,
                         updatedAt: Date.now()
                     });
+                    updateSyncBadge(true);
                 } catch (err) {
-                    console.warn('Cloud sync write skipped:', err);
+                    console.error('Realtime Database write failed:', err);
+                    updateSyncBadge(false);
+                    showToast('Could not save to cloud. Check Firebase database rules.');
                 }
             }
         }
@@ -1612,6 +1628,17 @@
             commitStaffState(null);
             showToast('Bloemfontein High demo data restored');
         };
+
+        function updateSyncBadge(connected) {
+            const badge = document.getElementById('syncBadge');
+            if (!badge) return;
+            badge.className = connected
+                ? 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-teal-50 text-[#007C89] border border-[#007C89]/25 shrink-0'
+                : 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-300 shrink-0';
+            badge.innerHTML = connected
+                ? '<span class="w-1.5 h-1.5 rounded-full bg-[#007C89] animate-pulse"></span>Cloud Live Sync'
+                : '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Local Mode';
+        }
 
         function showToast(message) {
             const container = document.getElementById('toastContainer');
