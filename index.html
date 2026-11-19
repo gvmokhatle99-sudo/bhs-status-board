@@ -1,0 +1,1667 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloemfontein High School — Leadership Live Board</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        bhs: {
+                            teal: '#007C89',
+                            navy: '#0B2A6B',
+                            gold: '#FACC15',
+                            goldLight: '#fef3c7',
+                        }
+                    },
+                    animation: {
+                        'flash-update': 'flashUpdate 0.85s ease-out',
+                    },
+                    keyframes: {
+                        flashUpdate: {
+                            '0%': { transform: 'scale(0.985)', boxShadow: '0 0 0 4px rgba(29, 78, 216, 0.35)' },
+                            '50%': { transform: 'scale(1.01)' },
+                            '100%': { transform: 'scale(1)', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .status-card {
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .status-card:hover {
+            transform: translateY(-2px);
+        }
+        .btn-press {
+            transition: transform 0.1s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-press:active {
+            transform: scale(0.97);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-blue-100 selection:text-blue-950">
+
+    <!-- Top Institutional Header: Bloemfontein High School -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+        <!-- Official Crest Teal, Royal Navy & Gold Accent Bar -->
+        <div class="h-1.5 w-full bg-gradient-to-r from-[#007C89] via-[#0B2A6B] to-[#FACC15]"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between py-3.5 gap-3">
+                
+                <!-- School Crest & Title -->
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <!-- Official Bloemfontein High School Crest Container -->
+                        <div class="w-12 h-14 rounded-2xl bg-white border-2 border-[#007C89]/30 p-1 flex items-center justify-center shadow-sm shrink-0 overflow-hidden">
+                            <svg class="w-full h-full object-contain" viewBox="0 0 220 260" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bloemfontein High School Crest">
+                                <!-- Top Arch Motto -->
+                                <defs>
+                                    <path id="topMottoArc" d="M 18,68 A 96,96 0 0,1 202,68" />
+                                </defs>
+                                <text fill="#0B2A6B" font-family="Georgia, serif" font-size="9.5" font-weight="bold" letter-spacing="0.7">
+                                    <textPath href="#topMottoArc" startOffset="50%" text-anchor="middle">20 JAAR VAN GENADE * 20 YEARS OF GRACE</textPath>
+                                </text>
+                                <!-- Outer Shield Border -->
+                                <path d="M 38 66 Q 55 58 68 44 Q 88 38 110 22 Q 132 38 152 44 Q 165 58 182 66 L 182 142 C 182 186 148 214 110 230 C 72 214 38 186 38 142 Z" fill="#FFFFFF" stroke="#0B2A6B" stroke-width="3.5" stroke-linejoin="round"/>
+                                <!-- Inner Teal Shield -->
+                                <path d="M 45 71 Q 60 63 72 50 Q 90 44 110 30 Q 130 44 148 50 Q 160 63 175 71 L 175 140 C 175 180 144 206 110 221 C 76 206 45 180 45 140 Z" fill="#007C89"/>
+                                <!-- Lime/Yellow Sunbeams -->
+                                <g stroke="#B8E600" stroke-width="2.6" stroke-linecap="round">
+                                    <line x1="110" y1="38" x2="110" y2="82" />
+                                    <line x1="88" y1="48" x2="96" y2="86" />
+                                    <line x1="132" y1="48" x2="124" y2="86" />
+                                    <line x1="65" y1="68" x2="84" y2="96" />
+                                    <line x1="155" y1="68" x2="136" y2="96" />
+                                    <line x1="52" y1="90" x2="76" y2="108" />
+                                    <line x1="168" y1="90" x2="144" y2="108" />
+                                </g>
+                                <!-- Yellow Rising Sun -->
+                                <path d="M 74 128 A 36 36 0 0 1 146 128 L 110 142 Z" fill="#FFF200"/>
+                                <!-- Navy Wings & Tail Cross -->
+                                <path d="M 76 116 L 86 110 L 110 146 L 134 110 L 144 116 L 118 156 L 154 188 L 146 196 L 118 172 L 124 202 L 114 204 L 110 176 L 106 204 L 96 202 L 102 172 L 74 196 L 66 188 L 102 156 Z" fill="#0B2A6B"/>
+                                <!-- Navy Wing Feather Accent Lines -->
+                                <g stroke="#0B2A6B" stroke-width="2.2" stroke-linecap="round">
+                                    <line x1="62" y1="126" x2="82" y2="136" />
+                                    <line x1="60" y1="138" x2="80" y2="148" />
+                                    <line x1="58" y1="150" x2="78" y2="160" />
+                                    <line x1="158" y1="126" x2="138" y2="136" />
+                                    <line x1="160" y1="138" x2="140" y2="148" />
+                                    <line x1="162" y1="150" x2="142" y2="160" />
+                                </g>
+                                <!-- White Eagle Head -->
+                                <path d="M 103 114 C 103 107 112 106 117 110 C 121 114 121 124 119 133 C 117 141 112 146 110 146 C 107 146 103 140 103 132 C 103 126 105 122 103 119 C 98 119 94 117 94 115 C 94 113 99 112 103 114 Z" fill="#FFFFFF" stroke="#0B2A6B" stroke-width="1.5"/>
+                                <circle cx="109" cy="113" r="1.4" fill="#0B2A6B"/>
+                                <!-- Bottom Royal Navy Scroll Banner -->
+                                <path d="M 16 196 L 34 190 L 32 204 L 110 232 L 188 204 L 186 190 L 204 196 L 194 226 L 110 254 L 26 226 Z" fill="#0B2A6B" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+                                <text x="58" y="226" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="11.5" font-weight="900" text-anchor="middle" transform="rotate(19 58 226)">STREWE</text>
+                                <text x="110" y="244" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="11.5" font-weight="900" text-anchor="middle">ALTYD</text>
+                                <text x="162" y="226" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="11.5" font-weight="900" text-anchor="middle" transform="rotate(-19 162 226)">HOËR</text>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-[#0B2A6B] leading-tight truncate">
+                                    Bloemfontein High School
+                                </h1>
+                                <span id="syncBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-teal-50 text-[#007C89] border border-[#007C89]/25 shrink-0">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#007C89] animate-pulse"></span>
+                                    Cloud Live Sync
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 font-medium truncate">
+                                Leadership &amp; Front Desk Live Status Board
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Clock -->
+                    <div class="md:hidden text-right shrink-0">
+                        <div id="mobileClock" class="text-sm font-extrabold tabular-nums text-[#0B2A6B]">--:--</div>
+                        <div id="mobileDate" class="text-[11px] text-slate-500">---</div>
+                    </div>
+                </div>
+
+                <!-- Right Controls: Mode Switcher (Hidden in Personalized Lock Mode) + Desktop Clock -->
+                <div class="flex items-center justify-between md:justify-end gap-4">
+                    
+                    <!-- Mode Switcher (Visible in General/Admin Mode) -->
+                    <div id="modeSwitcherContainer" class="bg-slate-100 p-1 rounded-xl border border-slate-200/80 flex w-full md:w-auto" role="tablist">
+                        <button id="tabFrontDesk" onclick="switchView('frontdesk')" role="tab" aria-selected="true"
+                            class="flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-[#0B2A6B] shadow-xs">
+                            <i data-lucide="monitor" class="w-4 h-4 text-[#007C89]"></i>
+                            <span>Front Desk Board</span>
+                        </button>
+                        <button id="tabLeaderToggle" onclick="switchView('leader')" role="tab" aria-selected="false"
+                            class="flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900">
+                            <i data-lucide="smartphone" class="w-4 h-4"></i>
+                            <span>Leader Quick-Toggle</span>
+                        </button>
+                    </div>
+
+                    <!-- Personal Link Active Badge (Visible ONLY when locked via ?leader=slug) -->
+                    <div id="personalLockHeaderBadge" class="hidden items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-50 border border-[#007C89]/30 text-[#0B2A6B] text-xs font-bold">
+                        <i data-lucide="lock" class="w-3.5 h-3.5 text-[#007C89]"></i>
+                        <span>Personal Quick-Toggle Link</span>
+                    </div>
+
+                    <!-- Desktop Live Digital Clock -->
+                    <div class="hidden md:flex items-center gap-3 pl-4 border-l border-slate-200">
+                        <div class="text-right">
+                            <div id="desktopClock" class="text-lg font-extrabold tabular-nums tracking-tight text-[#0B2A6B] leading-none">
+                                00:00:00
+                            </div>
+                            <div id="desktopDate" class="text-xs font-medium text-slate-500 mt-1">
+                                Loading date...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- =========================================================
+             VIEW 1: FRONT DESK LIVE MONITOR BOARD
+             ========================================================= -->
+        <section id="viewFrontDesk" class="space-y-6">
+            
+            <!-- Filter Pills + Search + Share Links + Manage Staff -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                
+                <!-- Status Filter Pills -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 xl:pb-0">
+                    <button onclick="setFilter('all')" data-filter="all"
+                        class="filter-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-[#0B2A6B] text-white shadow-xs shrink-0">
+                        <span>All Staff</span>
+                        <span id="count-all" class="px-1.5 py-0.5 text-[11px] rounded-md bg-white/20 text-white tabular-nums">10</span>
+                    </button>
+                    <button onclick="setFilter('available')" data-filter="available"
+                        class="filter-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200/80 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span>Available</span>
+                        <span id="count-available" class="px-1.5 py-0.5 text-[11px] rounded-md bg-emerald-200/70 text-emerald-950 tabular-nums">0</span>
+                    </button>
+                    <button onclick="setFilter('class')" data-filter="class"
+                        class="filter-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/80 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                        <span>In Class</span>
+                        <span id="count-class" class="px-1.5 py-0.5 text-[11px] rounded-md bg-amber-200/70 text-amber-950 tabular-nums">0</span>
+                    </button>
+                    <button onclick="setFilter('busy')" data-filter="busy"
+                        class="filter-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200/80 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                        <span>Busy / Meeting</span>
+                        <span id="count-busy" class="px-1.5 py-0.5 text-[11px] rounded-md bg-rose-200/70 text-rose-950 tabular-nums">0</span>
+                    </button>
+                    <button onclick="setFilter('out')" data-filter="out"
+                        class="filter-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 shrink-0">
+                        <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                        <span>Out of Office</span>
+                        <span id="count-out" class="px-1.5 py-0.5 text-[11px] rounded-md bg-slate-200 text-slate-800 tabular-nums">0</span>
+                    </button>
+                </div>
+
+                <!-- Search & Action Buttons -->
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+                    <div class="relative flex-1 sm:w-52">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" id="searchStaffInput" oninput="renderBoard()" placeholder="Search name or office..."
+                            class="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C89] focus:bg-white transition-all">
+                    </div>
+
+                    <!-- Share Personalized Links Button -->
+                    <button onclick="openShareLinksModal()"
+                        class="btn-press inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#007C89] hover:bg-[#006670] text-white shadow-xs transition-all shrink-0">
+                        <i data-lucide="link" class="w-4 h-4 text-[#FACC15]"></i>
+                        <span>Share Links</span>
+                    </button>
+
+                    <!-- Manage Staff Button -->
+                    <button onclick="openManageModal()"
+                        class="btn-press inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-2xs transition-all shrink-0">
+                        <i data-lucide="users-round" class="w-4 h-4 text-[#0B2A6B]"></i>
+                        <span>Manage Staff</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Leadership Cards Grid -->
+            <div id="frontDeskGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Empty Filter State -->
+            <div id="emptyFilterState" class="hidden bg-white rounded-2xl border border-slate-200 p-12 text-center">
+                <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="filter-x" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">No staff members match this filter</h3>
+                <p class="text-sm text-slate-500 mt-1">Clear your search or tap "All Staff" above.</p>
+                <button onclick="setFilter('all'); document.getElementById('searchStaffInput').value=''; renderBoard();"
+                    class="mt-4 px-4 py-2 bg-[#0B2A6B] text-white text-sm font-semibold rounded-xl hover:bg-[#007C89] transition-colors">
+                    Show All Staff
+                </button>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             VIEW 2: LEADER ONE-TAP QUICK-TOGGLE VIEW
+             (Supports both general dropdown mode & locked ?leader=<slug> mode)
+             ========================================================= -->
+        <section id="viewLeaderToggle" class="hidden max-w-xl mx-auto space-y-5">
+            
+            <!-- Main Quick-Toggle Card -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                
+                <!-- School Crest Teal & Royal Navy Header Card -->
+                <div class="bg-gradient-to-br from-[#0B2A6B] via-[#0d3580] to-[#007C89] text-white p-5 sm:p-6">
+                    
+                    <!-- MODE A: General Selector Dropdown (Hidden when opened via ?leader=<slug>) -->
+                    <div id="leaderDropdownWrapper">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <label for="leaderSelector" class="text-xs font-semibold uppercase tracking-wider text-[#FACC15] flex items-center gap-1.5">
+                                <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                                <span>Previewing / Acting as</span>
+                            </label>
+                            <button onclick="openShareLinksModal()" class="text-xs text-teal-100 hover:text-white underline underline-offset-2 font-medium">
+                                Get Personal Link
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <select id="leaderSelector" onchange="selectLeaderForToggle(this.value)"
+                                class="w-full appearance-none bg-slate-950/55 border border-white/25 text-white font-bold text-base sm:text-lg rounded-2xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#FACC15] cursor-pointer">
+                                <!-- Populated dynamically -->
+                            </select>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-teal-100 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <!-- MODE B: Locked Personalized Identity Header (Shown when opened via ?leader=<slug>) -->
+                    <div id="lockedLeaderIdentity" class="hidden">
+                        <div class="flex items-center gap-3.5">
+                            <!-- Official Crest Badge in Personalized Header -->
+                            <div class="w-14 h-16 rounded-2xl bg-white p-1.5 shadow-md shrink-0 flex items-center justify-center">
+                                <svg class="w-full h-full object-contain" viewBox="0 0 220 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M 38 66 Q 55 58 68 44 Q 88 38 110 22 Q 132 38 152 44 Q 165 58 182 66 L 182 142 C 182 186 148 214 110 230 C 72 214 38 186 38 142 Z" fill="#FFFFFF" stroke="#0B2A6B" stroke-width="4" stroke-linejoin="round"/>
+                                    <path d="M 45 71 Q 60 63 72 50 Q 90 44 110 30 Q 130 44 148 50 Q 160 63 175 71 L 175 140 C 175 180 144 206 110 221 C 76 206 45 180 45 140 Z" fill="#007C89"/>
+                                    <g stroke="#B8E600" stroke-width="3" stroke-linecap="round">
+                                        <line x1="110" y1="38" x2="110" y2="82" />
+                                        <line x1="88" y1="48" x2="96" y2="86" />
+                                        <line x1="132" y1="48" x2="124" y2="86" />
+                                        <line x1="65" y1="68" x2="84" y2="96" />
+                                        <line x1="155" y1="68" x2="136" y2="96" />
+                                    </g>
+                                    <path d="M 74 128 A 36 36 0 0 1 146 128 L 110 142 Z" fill="#FFF200"/>
+                                    <path d="M 76 116 L 86 110 L 110 146 L 134 110 L 144 116 L 118 156 L 154 188 L 146 196 L 118 172 L 124 202 L 114 204 L 110 176 L 106 204 L 96 202 L 102 172 L 74 196 L 66 188 L 102 156 Z" fill="#0B2A6B"/>
+                                    <path d="M 103 114 C 103 107 112 106 117 110 C 121 114 121 124 119 133 C 117 141 112 146 110 146 C 107 146 103 140 103 132 C 103 126 105 122 103 119 C 98 119 94 117 94 115 C 94 113 99 112 103 114 Z" fill="#FFFFFF" stroke="#0B2A6B" stroke-width="1.5"/>
+                                    <path d="M 16 196 L 34 190 L 32 204 L 110 232 L 188 204 L 186 190 L 204 196 L 194 226 L 110 254 L 26 226 Z" fill="#0B2A6B" stroke="#FFFFFF" stroke-width="1.5"/>
+                                    <text x="110" y="244" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="11.5" font-weight="900" text-anchor="middle">ALTYD</text>
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FACC15] mb-0.5">
+                                    Bloemfontein High School
+                                </span>
+                                <h2 id="lockedLeaderName" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white truncate">
+                                    Mr S Scott
+                                </h2>
+                                <p id="lockedLeaderRole" class="text-xs sm:text-sm font-medium text-teal-100 mt-0.5 truncate">
+                                    Principal &bull; Principal's Office • Ext 101
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Live Status Pill on Front Desk -->
+                    <div id="leaderCurrentBanner" class="mt-4 pt-4 border-t border-white/15 flex flex-wrap items-center justify-between gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- 4 Big One-Tap Status Buttons -->
+                <div class="p-5 sm:p-6 space-y-6">
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                            Tap to Update Front Desk Status
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            
+                            <!-- 1. Available in Office -->
+                            <button onclick="updateSelectedLeaderStatus('available')" id="btn-status-available"
+                                class="btn-press status-toggle-btn group relative flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all border-emerald-200 bg-emerald-50/60 hover:bg-emerald-50 hover:border-emerald-400">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                                    <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-slate-900 text-base">Available in Office</div>
+                                    <div class="text-xs text-emerald-800 font-medium">Ready for visitors &amp; calls</div>
+                                </div>
+                                <div class="active-check hidden text-emerald-600">
+                                    <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+                                </div>
+                            </button>
+
+                            <!-- 2. In Class / Teaching -->
+                            <button onclick="updateSelectedLeaderStatus('class')" id="btn-status-class"
+                                class="btn-press status-toggle-btn group relative flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all border-amber-200 bg-amber-50/60 hover:bg-amber-50 hover:border-amber-400">
+                                <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs shrink-0">
+                                    <i data-lucide="book-open" class="w-6 h-6"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-slate-900 text-base">In Class / Teaching</div>
+                                    <div class="text-xs text-amber-800 font-medium">Teaching &bull; Take a message</div>
+                                </div>
+                                <div class="active-check hidden text-amber-600">
+                                    <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+                                </div>
+                            </button>
+
+                            <!-- 3. Busy / In Meeting -->
+                            <button onclick="updateSelectedLeaderStatus('busy')" id="btn-status-busy"
+                                class="btn-press status-toggle-btn group relative flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all border-rose-200 bg-rose-50/60 hover:bg-rose-50 hover:border-rose-400">
+                                <div class="w-12 h-12 rounded-xl bg-rose-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                                    <i data-lucide="users" class="w-6 h-6"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-slate-900 text-base">Busy / In Meeting</div>
+                                    <div class="text-xs text-rose-800 font-medium">Do not disturb &bull; Hold calls</div>
+                                </div>
+                                <div class="active-check hidden text-rose-600">
+                                    <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+                                </div>
+                            </button>
+
+                            <!-- 4. Out of Office -->
+                            <button onclick="updateSelectedLeaderStatus('out')" id="btn-status-out"
+                                class="btn-press status-toggle-btn group relative flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all border-slate-200 bg-slate-100/80 hover:bg-slate-100 hover:border-slate-400">
+                                <div class="w-12 h-12 rounded-xl bg-slate-700 text-white flex items-center justify-center shadow-xs shrink-0">
+                                    <i data-lucide="log-out" class="w-6 h-6"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="font-bold text-slate-900 text-base">Out of Office</div>
+                                    <div class="text-xs text-slate-600 font-medium">Away from office or off campus</div>
+                                </div>
+                                <div class="active-check hidden text-slate-700">
+                                    <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+                                </div>
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <!-- Optional Quick Note Presets -->
+                    <div class="pt-4 border-t border-slate-100 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label for="customNoteInput" class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                Optional Front Desk Note (1-Tap Presets)
+                            </label>
+                            <button onclick="applyNoteToSelectedLeader('')" class="text-xs font-semibold text-rose-600 hover:text-rose-700">
+                                Clear note
+                            </button>
+                        </div>
+
+                        <!-- Quick One-Tap Preset Chips -->
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="applyNoteToSelectedLeader('Back in 15m')"
+                                class="btn-press px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-[#0B2A6B] border border-slate-200 hover:border-[#007C89]/40 transition-colors">
+                                ⏱️ Back in 15m
+                            </button>
+                            <button onclick="applyNoteToSelectedLeader('In Class')"
+                                class="btn-press px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-[#0B2A6B] border border-slate-200 hover:border-[#007C89]/40 transition-colors">
+                                📚 In Class
+                            </button>
+                            <button onclick="applyNoteToSelectedLeader('Parent Meeting')"
+                                class="btn-press px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-[#0B2A6B] border border-slate-200 hover:border-[#007C89]/40 transition-colors">
+                                👨‍👩‍👧 Parent Meeting
+                            </button>
+                            <button onclick="applyNoteToSelectedLeader('Off Campus')"
+                                class="btn-press px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-[#0B2A6B] border border-slate-200 hover:border-[#007C89]/40 transition-colors">
+                                🚗 Off Campus
+                            </button>
+                        </div>
+
+                        <!-- Custom Short Note Input -->
+                        <form onsubmit="handleCustomNoteSubmit(event)" class="flex gap-2 pt-1">
+                            <input type="text" id="customNoteInput" maxlength="60" placeholder="Or type a short note (e.g., 'Back at 11:30')..."
+                                class="flex-1 px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#007C89] focus:bg-white">
+                            <button type="submit"
+                                class="btn-press px-4 py-2.5 bg-[#0B2A6B] hover:bg-[#007C89] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors shrink-0">
+                                Save Note
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtle Return Link when locked into a Personalized Link -->
+            <div id="lockedReturnWrapper" class="hidden text-center pt-1">
+                <button onclick="exitPersonalLockMode()"
+                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#0B2A6B] underline underline-offset-4 transition-colors">
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    <span>Switch to Front Desk Demo</span>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Demo & Presentation Controls Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <div class="flex items-center gap-2 text-center sm:text-left">
+                <i data-lucide="bookmark-check" class="w-4 h-4 text-[#007C89] shrink-0"></i>
+                <span><strong class="text-slate-700">Bloemfontein High School Pilot:</strong> Use <strong class="text-slate-700">Share Links</strong> to copy or preview each staff member's personal pinned link.</span>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+                <button onclick="simulateLiveUpdate()"
+                    class="btn-press inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold bg-teal-50 text-[#0B2A6B] hover:bg-teal-100 border border-[#007C89]/30 transition-colors">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-[#007C89]"></i>
+                    <span>Simulate Live Update</span>
+                </button>
+                <button onclick="confirmDemoReset()"
+                    class="btn-press inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Reset Demo</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =========================================================
+         MODAL 1: SHARE PERSONALIZED LINKS
+         ========================================================= -->
+    <div id="shareLinksModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-gradient-to-r from-[#0B2A6B] to-[#007C89] text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/15 border border-[#FACC15]/60 flex items-center justify-center text-[#FACC15] shrink-0">
+                        <i data-lucide="link" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold leading-tight">Personalized Staff Links</h2>
+                        <p class="text-xs text-teal-100">Send each person their direct link to bookmark or pin on their phone/PC.</p>
+                    </div>
+                </div>
+                <button onclick="closeShareLinksModal()" class="p-2 rounded-xl text-teal-100 hover:text-white hover:bg-white/10 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Front Desk Reception Link Banner -->
+            <div class="px-6 py-3.5 bg-teal-50/70 border-b border-teal-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div class="min-w-0">
+                    <div class="text-xs font-extrabold uppercase tracking-wider text-[#0B2A6B] flex items-center gap-1.5">
+                        <i data-lucide="monitor" class="w-3.5 h-3.5 text-[#007C89]"></i>
+                        <span>Front Desk Reception Monitor Link</span>
+                    </div>
+                    <div id="frontDeskUrlDisplay" class="text-xs text-slate-600 font-mono truncate mt-0.5">
+                        Loading URL...
+                    </div>
+                </div>
+                <button id="copyFrontDeskBtn" onclick="copyTextToClipboard(getFrontDeskBaseUrl(), 'copyFrontDeskBtn')"
+                    class="btn-press inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white border border-[#007C89]/30 text-[#0B2A6B] hover:bg-teal-50 shadow-2xs shrink-0">
+                    <i data-lucide="copy" class="w-3.5 h-3.5 text-[#007C89]"></i>
+                    <span>Copy Front Desk Link</span>
+                </button>
+            </div>
+
+            <!-- List of All Leaders + Copy & Preview Actions -->
+            <div class="p-5 overflow-y-auto flex-1 space-y-2.5" id="shareLinksList">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between gap-2">
+                <span class="text-xs text-slate-500">Tip: Tap <strong>Preview Link</strong> to test a staff member's locked screen right here.</span>
+                <button onclick="closeShareLinksModal()"
+                    class="px-4 py-2 bg-[#0B2A6B] hover:bg-[#007C89] text-white text-sm font-semibold rounded-xl transition-colors shrink-0">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         MODAL 2: MANAGE STAFF (ADD / EDIT / REMOVE LEADERS)
+         ========================================================= -->
+    <div id="manageStaffModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Manage Leadership Roster</h2>
+                    <p class="text-xs text-slate-500">Add or edit Bloemfontein High School leadership members and offices.</p>
+                </div>
+                <button onclick="closeManageModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Add / Edit Form -->
+            <form id="staffForm" onsubmit="saveStaffMember(event)" class="p-5 bg-blue-50/50 border-b border-slate-200 space-y-3">
+                <input type="hidden" id="editStaffId" value="">
+                <div class="flex items-center justify-between">
+                    <span id="formModeLabel" class="text-xs font-bold uppercase tracking-wider text-[#0f294a]">Add New Leader</span>
+                    <button type="button" id="cancelEditBtn" onclick="resetStaffForm()" class="hidden text-xs font-semibold text-slate-500 hover:text-slate-800">
+                        Cancel Edit
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+                        <input type="text" id="staffNameInput" required placeholder="e.g., Mr K. Nel"
+                            class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Title / Role *</label>
+                        <input type="text" id="staffRoleInput" required placeholder="e.g., Head of Department (HOD)"
+                            class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Office / Ext *</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="staffExtInput" required placeholder="e.g., HOD Office 7"
+                                class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600">
+                            <button type="submit" id="saveStaffBtn"
+                                class="btn-press px-4 py-2 bg-[#0f294a] hover:bg-blue-900 text-white text-sm font-semibold rounded-xl shadow-xs shrink-0">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Current Roster List -->
+            <div class="p-5 overflow-y-auto flex-1 space-y-2.5" id="manageStaffList">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                <span class="text-xs text-slate-500" id="rosterCountLabel">10 staff members configured</span>
+                <button onclick="closeManageModal()"
+                    class="px-4 py-2 bg-[#0B2A6B] hover:bg-[#007C89] text-white text-sm font-semibold rounded-xl transition-colors">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmResetModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Reset Bloemfontein High Demo?</h3>
+                    <p class="text-xs text-slate-500">Restores all 10 staff profiles and default statuses.</p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2.5 pt-2">
+                <button onclick="closeConfirmReset()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">
+                    Cancel
+                </button>
+                <button onclick="executeDemoReset()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#0B2A6B] hover:bg-[#007C89] text-white">
+                    Yes, Reset Board
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         APPLICATION LOGIC (Firebase + LocalStorage/BroadcastChannel Sync)
+         ========================================================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Bloemfontein High School Leadership & Finance Roster (10 Staff Members)
+        const DEFAULT_STAFF = [
+            {
+                id: 'mr-s-scott',
+                slug: 'mr-s-scott',
+                name: 'Mr S Scott',
+                role: 'Principal',
+                ext: "Principal's Office • Ext 101",
+                status: 'available',
+                note: 'Open door until 11:00',
+                updatedAt: Date.now() - 1000 * 60 * 3
+            },
+            {
+                id: 'mr-p-milne',
+                slug: 'mr-p-milne',
+                name: 'Mr P Milne',
+                role: 'Deputy Principal',
+                ext: 'Deputy Office A • Ext 102',
+                status: 'busy',
+                note: 'Parent Meeting',
+                updatedAt: Date.now() - 1000 * 60 * 11
+            },
+            {
+                id: 'mr-h-may',
+                slug: 'mr-h-may',
+                name: 'Mr H May',
+                role: 'Deputy Principal',
+                ext: 'Deputy Office B • Ext 103',
+                status: 'available',
+                note: '',
+                updatedAt: Date.now() - 1000 * 60 * 5
+            },
+            {
+                id: 'mrs-liversage',
+                slug: 'mrs-liversage',
+                name: 'Mrs Liversage',
+                role: 'HOD',
+                ext: 'HOD Block • Ext 104',
+                status: 'class',
+                note: 'In Class',
+                updatedAt: Date.now() - 1000 * 60 * 18
+            },
+            {
+                id: 'mrs-cloete',
+                slug: 'mrs-cloete',
+                name: 'Mrs Cloete',
+                role: 'HOD',
+                ext: 'HOD Block • Ext 105',
+                status: 'available',
+                note: '',
+                updatedAt: Date.now() - 1000 * 60 * 7
+            },
+            {
+                id: 'mrs-van-heerden',
+                slug: 'mrs-van-heerden',
+                name: 'Mrs Van Heerden',
+                role: 'HOD',
+                ext: 'HOD Block • Ext 106',
+                status: 'out',
+                note: 'Off Campus',
+                updatedAt: Date.now() - 1000 * 60 * 35
+            },
+            {
+                id: 'mrs-jonker',
+                slug: 'mrs-jonker',
+                name: 'Mrs Jonker',
+                role: 'HOD',
+                ext: 'HOD Block • Ext 107',
+                status: 'class',
+                note: 'In Class',
+                updatedAt: Date.now() - 1000 * 60 * 22
+            },
+            {
+                id: 'mrs-scott',
+                slug: 'mrs-scott',
+                name: 'Mrs Scott',
+                role: 'HOD',
+                ext: 'HOD Block • Ext 108',
+                status: 'available',
+                note: '',
+                updatedAt: Date.now() - 1000 * 60 * 9
+            },
+            {
+                id: 'mrs-jabaar',
+                slug: 'mrs-jabaar',
+                name: 'Mrs Jabaar',
+                role: 'HOD',
+                ext: 'HOD Block • Ext 109',
+                status: 'busy',
+                note: 'Department moderation',
+                updatedAt: Date.now() - 1000 * 60 * 14
+            },
+            {
+                id: 'mrs-c-jacobs',
+                slug: 'mrs-c-jacobs',
+                name: 'Mrs C Jacobs',
+                role: 'Finance Office',
+                ext: 'Finance Office • Ext 110',
+                status: 'available',
+                note: 'Available for fee & account queries',
+                updatedAt: Date.now() - 1000 * 60 * 4
+            }
+        ];
+
+        // High-Contrast Status Visual Tokens
+        const STATUS_META = {
+            available: {
+                label: 'Available',
+                badgeBg: 'bg-emerald-100 text-emerald-950 border-emerald-300',
+                dotColor: 'bg-emerald-600',
+                borderAccent: 'border-l-emerald-500',
+                cardTint: 'bg-white'
+            },
+            class: {
+                label: 'In Class',
+                badgeBg: 'bg-amber-100 text-amber-950 border-amber-300',
+                dotColor: 'bg-amber-500',
+                borderAccent: 'border-l-amber-500',
+                cardTint: 'bg-white'
+            },
+            busy: {
+                label: 'Busy / Meeting',
+                badgeBg: 'bg-rose-100 text-rose-950 border-rose-300',
+                dotColor: 'bg-rose-600',
+                borderAccent: 'border-l-rose-500',
+                cardTint: 'bg-white'
+            },
+            out: {
+                label: 'Out of Office',
+                badgeBg: 'bg-slate-200 text-slate-800 border-slate-300',
+                dotColor: 'bg-slate-500',
+                borderAccent: 'border-l-slate-500',
+                cardTint: 'bg-slate-50/90'
+            }
+        };
+
+        // Application State
+        let staffList = [];
+        let currentFilter = 'all';
+        let selectedLeaderId = 'mr-s-scott';
+        let lockedLeaderSlug = null; // Non-null when ?leader=<slug> or #leader=<slug> is active
+        let lastUpdatedId = null;
+
+        // Persistence & Cross-Tab Live Sync
+        const STORAGE_KEY = 'bhs_leadership_board_v3';
+        const syncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('bhs_leadership_sync') : null;
+        let firestoreDocRef = null;
+        let isCloudEnabled = false;
+
+        // Generate clean URL slug from any name
+        function createSlug(name) {
+            return String(name || '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        }
+
+        // Read ?leader=<slug> or #leader=<slug> from URL
+        function detectLeaderSlugFromUrl() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const querySlug = urlParams.get('leader');
+                if (querySlug) return createSlug(querySlug);
+
+                if (window.location.hash) {
+                    const cleanHash = window.location.hash.replace(/^#/, '');
+                    if (cleanHash.startsWith('leader=')) {
+                        return createSlug(decodeURIComponent(cleanHash.split('=')[1] || ''));
+                    }
+                    const hashParams = new URLSearchParams(cleanHash);
+                    const hashSlug = hashParams.get('leader');
+                    if (hashSlug) return createSlug(hashSlug);
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        // Build clean shareable URLs
+        window.getFrontDeskBaseUrl = function() {
+            return window.location.href.split('?')[0].split('#')[0];
+        };
+
+        window.getPersonalizedLeaderUrl = function(slug) {
+            return `${getFrontDeskBaseUrl()}?leader=${encodeURIComponent(slug)}`;
+        };
+
+        // Initialize Sync Engine & URL Routing
+        async function initApp() {
+            // Load local data first so UI renders immediately
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        staffList = parsed.map(item => ({
+                            ...item,
+                            slug: item.slug || createSlug(item.name)
+                        }));
+                    } else {
+                        staffList = structuredClone(DEFAULT_STAFF);
+                    }
+                } catch (e) {
+                    staffList = structuredClone(DEFAULT_STAFF);
+                }
+            } else {
+                staffList = structuredClone(DEFAULT_STAFF);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(staffList));
+            }
+
+            // Check if opened via personalized link (?leader=<slug> or #leader=<slug>)
+            applyUrlRoutingState();
+
+            // Listen for browser back/forward or hash changes
+            window.addEventListener('popstate', () => {
+                applyUrlRoutingState();
+            });
+            window.addEventListener('hashchange', () => {
+                applyUrlRoutingState();
+            });
+
+            // Cross-tab BroadcastChannel sync
+            if (syncChannel) {
+                syncChannel.onmessage = (event) => {
+                    if (event.data && event.data.type === 'SYNC_STAFF') {
+                        staffList = event.data.payload;
+                        lastUpdatedId = event.data.updatedId || null;
+                        renderAll();
+                    }
+                };
+            }
+
+            // Cross-tab localStorage event fallback
+            window.addEventListener('storage', (e) => {
+                if (e.key === STORAGE_KEY && e.newValue) {
+                    try {
+                        staffList = JSON.parse(e.newValue);
+                        renderAll();
+                    } catch (err) {}
+                }
+            });
+
+            // Firebase Firestore Real-Time Cloud Sync (when config is present)
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'bloemfontein-high-board';
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    const db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    firestoreDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'bhs_leadership_board', 'roster_state');
+                    isCloudEnabled = true;
+
+                    onSnapshot(firestoreDocRef, (snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.data();
+                            if (Array.isArray(data.staff) && data.staff.length > 0) {
+                                staffList = data.staff.map(item => ({
+                                    ...item,
+                                    slug: item.slug || createSlug(item.name)
+                                }));
+                                lastUpdatedId = data.lastUpdatedId || null;
+                                localStorage.setItem(STORAGE_KEY, JSON.stringify(staffList));
+                                renderAll();
+                            }
+                        } else {
+                            setDoc(firestoreDocRef, { staff: staffList, lastUpdatedId: null }).catch(() => {});
+                        }
+                    }, (err) => {
+                        console.warn('Firestore listener fallback to local sync:', err);
+                    });
+                }
+            } catch (err) {
+                console.info('Running with local multi-tab live sync.');
+            }
+        }
+
+        // Apply locked personalized view vs general Front Desk view based on URL
+        function applyUrlRoutingState() {
+            const slugFromUrl = detectLeaderSlugFromUrl();
+            if (slugFromUrl) {
+                const matchedLeader = staffList.find(s => s.slug === slugFromUrl || s.id === slugFromUrl);
+                if (matchedLeader) {
+                    lockedLeaderSlug = matchedLeader.slug;
+                    selectedLeaderId = matchedLeader.id;
+                    enterPersonalLockMode(matchedLeader);
+                    return;
+                }
+            }
+
+            // Default: General / Front Desk Mode
+            lockedLeaderSlug = null;
+            if (!staffList.some(s => s.id === selectedLeaderId) && staffList.length > 0) {
+                selectedLeaderId = staffList[0].id;
+            }
+            configureGeneralHeaderUI();
+            switchView('frontdesk');
+            renderAll();
+        }
+
+        function configureGeneralHeaderUI() {
+            const switcher = document.getElementById('modeSwitcherContainer');
+            const lockBadge = document.getElementById('personalLockHeaderBadge');
+            const dropdownWrap = document.getElementById('leaderDropdownWrapper');
+            const lockedIdentity = document.getElementById('lockedLeaderIdentity');
+            const lockedReturn = document.getElementById('lockedReturnWrapper');
+
+            if (switcher) switcher.classList.remove('hidden');
+            if (lockBadge) {
+                lockBadge.classList.add('hidden');
+                lockBadge.classList.remove('inline-flex');
+            }
+            if (dropdownWrap) dropdownWrap.classList.remove('hidden');
+            if (lockedIdentity) lockedIdentity.classList.add('hidden');
+            if (lockedReturn) lockedReturn.classList.add('hidden');
+        }
+
+        // Activate Locked Personal Leader Quick-Toggle Mode
+        function enterPersonalLockMode(leader) {
+            const switcher = document.getElementById('modeSwitcherContainer');
+            const lockBadge = document.getElementById('personalLockHeaderBadge');
+            const dropdownWrap = document.getElementById('leaderDropdownWrapper');
+            const lockedIdentity = document.getElementById('lockedLeaderIdentity');
+            const lockedReturn = document.getElementById('lockedReturnWrapper');
+
+            // Hide top switcher tabs & selector dropdown so leader sees ONLY their own controls
+            if (switcher) switcher.classList.add('hidden');
+            if (lockBadge) {
+                lockBadge.classList.remove('hidden');
+                lockBadge.classList.add('inline-flex');
+            }
+            if (dropdownWrap) dropdownWrap.classList.add('hidden');
+            if (lockedIdentity) lockedIdentity.classList.remove('hidden');
+            if (lockedReturn) lockedReturn.classList.remove('hidden');
+
+            document.getElementById('lockedLeaderName').textContent = leader.name;
+            document.getElementById('lockedLeaderRole').textContent = `${leader.role} • ${leader.ext}`;
+
+            switchView('leader');
+            renderLeaderToggleView();
+        }
+
+        // Preview a specific leader's personalized link directly from the Share Links modal
+        window.previewLeaderLink = function(slug) {
+            closeShareLinksModal();
+            const target = staffList.find(s => s.slug === slug);
+            if (!target) return;
+
+            try {
+                const newUrl = `${getFrontDeskBaseUrl()}?leader=${encodeURIComponent(slug)}`;
+                window.history.pushState({ leader: slug }, '', newUrl);
+            } catch (e) {
+                window.location.hash = `leader=${encodeURIComponent(slug)}`;
+            }
+
+            lockedLeaderSlug = target.slug;
+            selectedLeaderId = target.id;
+            enterPersonalLockMode(target);
+            showToast(`Previewing ${target.name}'s locked personal view`);
+        };
+
+        // Exit personal lock back to Front Desk Overview
+        window.exitPersonalLockMode = function() {
+            try {
+                window.history.pushState({}, '', getFrontDeskBaseUrl());
+            } catch (e) {
+                window.location.hash = '';
+            }
+            lockedLeaderSlug = null;
+            configureGeneralHeaderUI();
+            switchView('frontdesk');
+            renderAll();
+        };
+
+        // Commit changes to localStorage, BroadcastChannel, and Cloud Firestore
+        async function commitStaffState(updatedId = null) {
+            lastUpdatedId = updatedId;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(staffList));
+
+            if (syncChannel) {
+                syncChannel.postMessage({
+                    type: 'SYNC_STAFF',
+                    payload: staffList,
+                    updatedId: updatedId
+                });
+            }
+
+            renderAll();
+
+            if (isCloudEnabled && firestoreDocRef) {
+                try {
+                    await setDoc(firestoreDocRef, {
+                        staff: staffList,
+                        lastUpdatedId: updatedId,
+                        updatedAt: Date.now()
+                    });
+                } catch (err) {
+                    console.warn('Cloud sync write skipped:', err);
+                }
+            }
+        }
+
+        // Relative time formatter ("Just now", "3m ago")
+        function formatRelativeTime(timestamp) {
+            if (!timestamp) return 'Just now';
+            const diffSec = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+            if (diffSec < 15) return 'Just now';
+            if (diffSec < 60) return `${diffSec}s ago`;
+            const diffMin = Math.floor(diffSec / 60);
+            if (diffMin < 60) return `${diffMin}m ago`;
+            const diffHr = Math.floor(diffMin / 60);
+            if (diffHr < 24) return `${diffHr}h ago`;
+            return new Date(timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+        }
+
+        // Live Clock
+        function updateClocks() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            const shortTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            const dateStr = now.toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+            const shortDateStr = now.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+
+            const dClock = document.getElementById('desktopClock');
+            const dDate = document.getElementById('desktopDate');
+            const mClock = document.getElementById('mobileClock');
+            const mDate = document.getElementById('mobileDate');
+
+            if (dClock) dClock.textContent = timeStr;
+            if (dDate) dDate.textContent = dateStr;
+            if (mClock) mClock.textContent = shortTimeStr;
+            if (mDate) mDate.textContent = shortDateStr;
+        }
+
+        // View Switcher
+        window.switchView = function(view) {
+            const frontDeskSec = document.getElementById('viewFrontDesk');
+            const leaderSec = document.getElementById('viewLeaderToggle');
+            const tabFD = document.getElementById('tabFrontDesk');
+            const tabLT = document.getElementById('tabLeaderToggle');
+
+            if (view === 'frontdesk') {
+                frontDeskSec.classList.remove('hidden');
+                leaderSec.classList.add('hidden');
+                if (tabFD && tabLT) {
+                    tabFD.className = 'flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-[#0B2A6B] shadow-xs';
+                    tabLT.className = 'flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900';
+                    tabFD.setAttribute('aria-selected', 'true');
+                    tabLT.setAttribute('aria-selected', 'false');
+                }
+            } else {
+                frontDeskSec.classList.add('hidden');
+                leaderSec.classList.remove('hidden');
+                if (tabFD && tabLT) {
+                    tabLT.className = 'flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white text-[#0B2A6B] shadow-xs';
+                    tabFD.className = 'flex-1 md:flex-initial flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900';
+                    tabLT.setAttribute('aria-selected', 'true');
+                    tabFD.setAttribute('aria-selected', 'false');
+                }
+                renderLeaderToggleView();
+            }
+            lucide.createIcons();
+        };
+
+        // Filter Pills Handler
+        window.setFilter = function(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-pill').forEach(btn => {
+                const f = btn.getAttribute('data-filter');
+                if (f === filter) {
+                    btn.classList.add('ring-2', 'ring-offset-1', 'ring-blue-600');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-offset-1', 'ring-blue-600');
+                }
+            });
+            renderBoard();
+        };
+
+        // Render Front Desk Live Board
+        window.renderBoard = function() {
+            const grid = document.getElementById('frontDeskGrid');
+            const emptyState = document.getElementById('emptyFilterState');
+            const searchQuery = (document.getElementById('searchStaffInput')?.value || '').trim().toLowerCase();
+
+            // Count statuses
+            const counts = { all: staffList.length, available: 0, class: 0, busy: 0, out: 0 };
+            staffList.forEach(s => {
+                if (counts[s.status] !== undefined) counts[s.status]++;
+            });
+            Object.keys(counts).forEach(k => {
+                const el = document.getElementById(`count-${k}`);
+                if (el) el.textContent = counts[k];
+            });
+
+            // Filter roster
+            const filtered = staffList.filter(staff => {
+                const matchesStatus = currentFilter === 'all' || staff.status === currentFilter;
+                const matchesSearch = !searchQuery ||
+                    staff.name.toLowerCase().includes(searchQuery) ||
+                    staff.role.toLowerCase().includes(searchQuery) ||
+                    staff.ext.toLowerCase().includes(searchQuery);
+                return matchesStatus && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(staff => {
+                const meta = STATUS_META[staff.status] || STATUS_META.available;
+                const animClass = (staff.id === lastUpdatedId) ? 'animate-flash-update' : '';
+                // Subtle role badge styling for Principal, Deputy Principals, Finance & HODs
+                const isPrincipal = staff.role.toLowerCase() === 'principal';
+                const isDeputy = staff.role.toLowerCase().includes('deputy');
+                const isFinance = staff.role.toLowerCase().includes('finance');
+                const roleBadgeClass = isPrincipal
+                    ? 'text-[#0B2A6B] font-bold'
+                    : isDeputy
+                        ? 'text-[#007C89] font-bold'
+                        : isFinance
+                            ? 'text-teal-800 font-bold'
+                            : 'text-slate-600 font-semibold';
+
+                return `
+                    <article class="status-card ${meta.cardTint} ${animClass} rounded-2xl border border-slate-200 border-l-[6px] ${meta.borderAccent} p-5 shadow-2xs flex flex-col justify-between gap-4">
+                        <div>
+                            <!-- Top Row: Name, Role & High-Contrast Status Badge -->
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3 class="text-lg font-extrabold text-slate-900 tracking-tight truncate">
+                                        ${escapeHtml(staff.name)}
+                                    </h3>
+                                    <p class="text-xs sm:text-sm ${roleBadgeClass} mt-0.5">
+                                        ${escapeHtml(staff.role)}
+                                    </p>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border ${meta.badgeBg} shrink-0">
+                                    <span class="w-2 h-2 rounded-full ${meta.dotColor}"></span>
+                                    ${meta.label}
+                                </span>
+                            </div>
+
+                            <!-- Optional Status Note -->
+                            ${staff.note ? `
+                                <div class="mt-3.5 px-3.5 py-2.5 rounded-xl bg-slate-100/90 border border-slate-200/80 flex items-start gap-2 text-slate-800">
+                                    <i data-lucide="message-square-text" class="w-4 h-4 text-[#007C89] shrink-0 mt-0.5"></i>
+                                    <span class="text-xs sm:text-sm font-medium leading-snug">${escapeHtml(staff.note)}</span>
+                                </div>
+                            ` : `
+                                <div class="mt-3.5 px-3.5 py-2 rounded-xl border border-dashed border-slate-200 text-xs text-slate-400 italic">
+                                    No status note set
+                                </div>
+                            `}
+                        </div>
+
+                        <!-- Bottom Row: Office / Extension & Timestamp -->
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 gap-2">
+                            <span class="inline-flex items-center gap-1.5 font-medium text-slate-600 truncate">
+                                <i data-lucide="door-open" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                                <span class="truncate">${escapeHtml(staff.ext)}</span>
+                            </span>
+                            <span class="inline-flex items-center gap-1 tabular-nums shrink-0" title="${new Date(staff.updatedAt).toLocaleTimeString()}">
+                                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                ${formatRelativeTime(staff.updatedAt)}
+                            </span>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            if (lastUpdatedId) {
+                setTimeout(() => { lastUpdatedId = null; }, 900);
+            }
+
+            lucide.createIcons();
+        };
+
+        // Render Leader Quick-Toggle View
+        function renderLeaderToggleView() {
+            const selector = document.getElementById('leaderSelector');
+            if (selector) {
+                selector.innerHTML = staffList.map(s => `
+                    <option value="${s.id}" ${s.id === selectedLeaderId ? 'selected' : ''}>
+                        ${escapeHtml(s.name)} — ${escapeHtml(s.role)}
+                    </option>
+                `).join('');
+            }
+
+            const activeLeader = staffList.find(s => s.id === selectedLeaderId) || staffList[0];
+            if (!activeLeader) return;
+            selectedLeaderId = activeLeader.id;
+
+            // Keep locked header identity updated if active
+            if (lockedLeaderSlug) {
+                const nameEl = document.getElementById('lockedLeaderName');
+                const roleEl = document.getElementById('lockedLeaderRole');
+                if (nameEl) nameEl.textContent = activeLeader.name;
+                if (roleEl) roleEl.textContent = `${activeLeader.role} • ${activeLeader.ext}`;
+            }
+
+            const meta = STATUS_META[activeLeader.status] || STATUS_META.available;
+
+            const banner = document.getElementById('leaderCurrentBanner');
+            banner.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-blue-200">Front Desk shows:</span>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${meta.badgeBg}">
+                        <span class="w-2 h-2 rounded-full ${meta.dotColor}"></span>
+                        ${meta.label}
+                    </span>
+                </div>
+                <span class="text-xs text-blue-200 tabular-nums">
+                    Updated ${formatRelativeTime(activeLeader.updatedAt)}
+                </span>
+            `;
+
+            // Highlight currently active status button
+            ['available', 'class', 'busy', 'out'].forEach(st => {
+                const btn = document.getElementById(`btn-status-${st}`);
+                const check = btn?.querySelector('.active-check');
+                if (!btn) return;
+                if (activeLeader.status === st) {
+                    btn.classList.add('ring-2', 'ring-blue-600', 'shadow-md');
+                    if (check) check.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-blue-600', 'shadow-md');
+                    if (check) check.classList.add('hidden');
+                }
+            });
+
+            const noteInput = document.getElementById('customNoteInput');
+            if (noteInput && document.activeElement !== noteInput) {
+                noteInput.value = activeLeader.note || '';
+            }
+
+            lucide.createIcons();
+        }
+
+        window.selectLeaderForToggle = function(id) {
+            selectedLeaderId = id;
+            renderLeaderToggleView();
+        };
+
+        window.updateSelectedLeaderStatus = function(newStatus) {
+            const idx = staffList.findIndex(s => s.id === selectedLeaderId);
+            if (idx === -1) return;
+
+            staffList[idx].status = newStatus;
+            staffList[idx].updatedAt = Date.now();
+
+            const meta = STATUS_META[newStatus];
+            commitStaffState(staffList[idx].id);
+            showToast(`${staffList[idx].name} → ${meta.label}`);
+        };
+
+        window.applyNoteToSelectedLeader = function(noteText) {
+            const idx = staffList.findIndex(s => s.id === selectedLeaderId);
+            if (idx === -1) return;
+
+            staffList[idx].note = noteText.trim();
+            staffList[idx].updatedAt = Date.now();
+
+            const noteInput = document.getElementById('customNoteInput');
+            if (noteInput) noteInput.value = staffList[idx].note;
+
+            commitStaffState(staffList[idx].id);
+            showToast(noteText ? `Note saved: "${noteText}"` : 'Status note cleared');
+        };
+
+        window.handleCustomNoteSubmit = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('customNoteInput');
+            applyNoteToSelectedLeader(input ? input.value : '');
+        };
+
+        // =========================================================
+        // SHARE PERSONALIZED LINKS MODAL
+        // =========================================================
+        window.openShareLinksModal = function() {
+            const modal = document.getElementById('shareLinksModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const fdDisplay = document.getElementById('frontDeskUrlDisplay');
+            if (fdDisplay) fdDisplay.textContent = getFrontDeskBaseUrl();
+
+            renderShareLinksList();
+        };
+
+        window.closeShareLinksModal = function() {
+            const modal = document.getElementById('shareLinksModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        function renderShareLinksList() {
+            const listEl = document.getElementById('shareLinksList');
+            if (!listEl) return;
+
+            listEl.innerHTML = staffList.map(s => {
+                const personalUrl = getPersonalizedLeaderUrl(s.slug);
+                const copyBtnId = `copy-btn-${s.slug}`;
+
+                return `
+                    <div class="p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-blue-200 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-sm text-slate-900">${escapeHtml(s.name)}</span>
+                                <span class="text-xs font-semibold text-[#0B2A6B] bg-teal-50 border border-[#007C89]/25 px-2 py-0.5 rounded-md">${escapeHtml(s.role)}</span>
+                            </div>
+                            <div class="text-xs font-mono text-slate-500 truncate mt-1 select-all">
+                                ${escapeHtml(personalUrl)}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button id="${copyBtnId}" onclick="copyTextToClipboard('${escapeJsString(personalUrl)}', '${copyBtnId}')"
+                                class="btn-press inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span>Copy Link</span>
+                            </button>
+                            <button onclick="previewLeaderLink('${escapeJsString(s.slug)}')"
+                                class="btn-press inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-[#0B2A6B] hover:bg-[#007C89] text-white transition-colors">
+                                <i data-lucide="external-link" class="w-3.5 h-3.5 text-[#FACC15]"></i>
+                                <span>Preview Link</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Reliable iFrame-compatible Clipboard Copy with Visual "Copied!" Feedback
+        window.copyTextToClipboard = function(text, buttonId) {
+            const fallbackCopy = (str) => {
+                const textarea = document.createElement('textarea');
+                textarea.value = str;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {}
+                document.body.removeChild(textarea);
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+
+            const btn = document.getElementById(buttonId);
+            if (btn) {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i><span class="text-emerald-700">Copied!</span>`;
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    lucide.createIcons();
+                }, 1800);
+            }
+            showToast('Link copied to clipboard');
+        };
+
+        // =========================================================
+        // MANAGE STAFF MODAL
+        // =========================================================
+        window.openManageModal = function() {
+            const modal = document.getElementById('manageStaffModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            resetStaffForm();
+            renderManageStaffList();
+        };
+
+        window.closeManageModal = function() {
+            const modal = document.getElementById('manageStaffModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        function renderManageStaffList() {
+            const listEl = document.getElementById('manageStaffList');
+            const countEl = document.getElementById('rosterCountLabel');
+            if (countEl) countEl.textContent = `${staffList.length} staff member${staffList.length === 1 ? '' : 's'} configured`;
+
+            listEl.innerHTML = staffList.map(s => `
+                <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors">
+                    <div class="min-w-0">
+                        <div class="font-bold text-sm text-slate-900 truncate">${escapeHtml(s.name)}</div>
+                        <div class="text-xs text-slate-500 truncate">${escapeHtml(s.role)} &bull; <span class="font-medium text-slate-700">${escapeHtml(s.ext)}</span></div>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="editStaffMember('${s.id}')" title="Edit"
+                            class="p-2 rounded-xl text-slate-500 hover:text-blue-700 hover:bg-blue-50 transition-colors">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="removeStaffMember('${s.id}')" title="Remove"
+                            class="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors ${staffList.length <= 1 ? 'opacity-40 pointer-events-none' : ''}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        window.editStaffMember = function(id) {
+            const staff = staffList.find(s => s.id === id);
+            if (!staff) return;
+
+            document.getElementById('editStaffId').value = staff.id;
+            document.getElementById('staffNameInput').value = staff.name;
+            document.getElementById('staffRoleInput').value = staff.role;
+            document.getElementById('staffExtInput').value = staff.ext;
+
+            document.getElementById('formModeLabel').textContent = 'Edit Leader Details';
+            document.getElementById('saveStaffBtn').textContent = 'Update';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+        };
+
+        window.resetStaffForm = function() {
+            document.getElementById('editStaffId').value = '';
+            document.getElementById('staffNameInput').value = '';
+            document.getElementById('staffRoleInput').value = '';
+            document.getElementById('staffExtInput').value = '';
+
+            document.getElementById('formModeLabel').textContent = 'Add New Leader';
+            document.getElementById('saveStaffBtn').textContent = 'Add';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        };
+
+        window.saveStaffMember = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editStaffId').value;
+            const name = document.getElementById('staffNameInput').value.trim();
+            const role = document.getElementById('staffRoleInput').value.trim();
+            const ext = document.getElementById('staffExtInput').value.trim();
+
+            if (!name || !role || !ext) return;
+
+            if (id) {
+                const idx = staffList.findIndex(s => s.id === id);
+                if (idx !== -1) {
+                    staffList[idx].name = name;
+                    staffList[idx].role = role;
+                    staffList[idx].ext = ext;
+                    staffList[idx].slug = createSlug(name);
+                    staffList[idx].updatedAt = Date.now();
+                    commitStaffState(id);
+                    showToast(`Updated ${name}`);
+                }
+            } else {
+                const slug = createSlug(name) + '-' + String(Date.now()).slice(-3);
+                staffList.push({
+                    id: slug,
+                    slug: slug,
+                    name,
+                    role,
+                    ext,
+                    status: 'available',
+                    note: '',
+                    updatedAt: Date.now()
+                });
+                commitStaffState(slug);
+                showToast(`Added ${name} to board`);
+            }
+
+            resetStaffForm();
+            renderManageStaffList();
+        };
+
+        window.removeStaffMember = function(id) {
+            if (staffList.length <= 1) return;
+            const target = staffList.find(s => s.id === id);
+            staffList = staffList.filter(s => s.id !== id);
+            if (selectedLeaderId === id) {
+                selectedLeaderId = staffList[0].id;
+            }
+            commitStaffState(null);
+            renderManageStaffList();
+            if (target) showToast(`Removed ${target.name}`);
+        };
+
+        // Demo Simulation & Reset
+        window.simulateLiveUpdate = function() {
+            if (staffList.length === 0) return;
+            const randomIdx = Math.floor(Math.random() * staffList.length);
+            const person = staffList[randomIdx];
+            const statuses = ['available', 'class', 'busy', 'out'].filter(s => s !== person.status);
+            const nextStatus = statuses[Math.floor(Math.random() * statuses.length)];
+
+            const sampleNotes = {
+                available: ['', 'Open door until 12:00', 'Back in office'],
+                class: ['Teaching Grade 11', 'Teaching Grade 12', 'In Lab'],
+                busy: ['With a parent', 'Department meeting', 'On a call'],
+                out: ['Off campus / District', 'Back in 10 mins', 'On campus grounds']
+            };
+            const notesPool = sampleNotes[nextStatus];
+            const randomNote = notesPool[Math.floor(Math.random() * notesPool.length)];
+
+            person.status = nextStatus;
+            person.note = randomNote;
+            person.updatedAt = Date.now();
+
+            commitStaffState(person.id);
+            showToast(`Simulated: ${person.name} → ${STATUS_META[nextStatus].label}`);
+        };
+
+        window.confirmDemoReset = function() {
+            const modal = document.getElementById('confirmResetModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeConfirmReset = function() {
+            const modal = document.getElementById('confirmResetModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.executeDemoReset = function() {
+            staffList = structuredClone(DEFAULT_STAFF).map((item, idx) => ({
+                ...item,
+                updatedAt: Date.now() - idx * 1000 * 60 * 4
+            }));
+            selectedLeaderId = staffList[0].id;
+            closeConfirmReset();
+            commitStaffState(null);
+            showToast('Bloemfontein High demo data restored');
+        };
+
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto bg-[#0B2A6B] text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg border border-[#007C89] flex items-center gap-2.5 transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-[#FACC15] shrink-0"></span>
+                <span class="flex-1">${escapeHtml(message)}</span>
+            `;
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function escapeJsString(str) {
+            return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+
+        function renderAll() {
+            renderBoard();
+            renderLeaderToggleView();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateClocks();
+            setInterval(updateClocks, 1000);
+            setInterval(renderAll, 30000);
+            initApp();
+        });
+    </script>
+</body>
+</html>
+```
