@@ -43,7 +43,6 @@
       flex-direction: column;
     }
 
-    /* Header */
     header {
       background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 65%, var(--teal) 100%);
       color: #fff;
@@ -179,7 +178,6 @@
     }
     .btn-ghost:hover:not(:disabled) { background: #cbd5e1; }
 
-    /* Main Container */
     main {
       max-width: 1200px;
       width: 100%;
@@ -188,7 +186,6 @@
       flex: 1;
     }
 
-    /* Banner / Alert */
     .alert-banner {
       display: none;
       padding: 0.8rem 1rem;
@@ -210,7 +207,31 @@
       border: 1px solid #99f6e4;
     }
 
-    /* Summary Strip */
+    .personal-banner {
+      display: none;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      border-left: 6px solid var(--gold);
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .personal-banner.active {
+      display: flex;
+    }
+    .personal-banner h2 {
+      font-size: 1.05rem;
+      margin-bottom: 0.2rem;
+    }
+    .personal-banner p {
+      font-size: 0.84rem;
+      color: #e2e8f0;
+    }
+
     .summary-bar {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -240,7 +261,6 @@
       color: var(--navy);
     }
 
-    /* Toolbar */
     .toolbar {
       display: flex;
       flex-wrap: wrap;
@@ -269,6 +289,11 @@
       color: #854d0e;
       border: 1px solid var(--gold);
     }
+    .mode-self {
+      background: var(--teal-light);
+      color: var(--teal);
+      border: 1px solid var(--teal);
+    }
 
     .toolbar-actions {
       display: flex;
@@ -285,7 +310,6 @@
       min-width: 210px;
     }
 
-    /* Staff Grid */
     .staff-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
@@ -303,7 +327,12 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 0.85rem;
-      transition: transform 0.12s ease;
+    }
+
+    .staff-card.self-highlight {
+      border: 2px solid var(--gold);
+      border-left: 6px solid var(--gold);
+      box-shadow: 0 6px 20px rgba(212, 160, 23, 0.22);
     }
 
     .staff-card.status-in { border-left-color: #16a34a; }
@@ -377,7 +406,6 @@
       color: var(--muted);
     }
 
-    /* Admin Controls inside Card */
     .edit-controls {
       border-top: 1px solid #e2e8f0;
       padding-top: 0.75rem;
@@ -436,7 +464,23 @@
 
     .card-footer-admin {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.15rem;
+    }
+
+    .copy-link-btn {
+      background: var(--teal-light);
+      color: var(--teal);
+      border: 1px solid #99f6e4;
+      border-radius: 6px;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .copy-link-btn:hover {
+      background: #ccfbf1;
     }
 
     .remove-link {
@@ -448,7 +492,6 @@
       text-decoration: underline;
     }
 
-    /* Modal */
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -560,6 +603,14 @@
   <main>
     <div id="alertBanner" class="alert-banner"></div>
 
+    <div id="personalBanner" class="personal-banner">
+      <div>
+        <h2 id="personalBannerTitle">Personal Quick-Update Link Active</h2>
+        <p>You can update your own status and return note directly from this link.</p>
+      </div>
+      <button type="button" class="btn btn-outline-light" id="showAllBoardBtn">View Full School Board</button>
+    </div>
+
     <section class="summary-bar">
       <div class="stat-card">
         <span>Total Staff</span>
@@ -591,9 +642,7 @@
       </div>
     </section>
 
-    <section id="staffGrid" class="staff-grid">
-      <!-- Cards rendered dynamically from Firebase Realtime Database -->
-    </section>
+    <section id="staffGrid" class="staff-grid"></section>
   </main>
 
   <footer>
@@ -604,7 +653,7 @@
   <div class="modal-backdrop" id="loginModal">
     <div class="modal">
       <h2>Admin Sign In</h2>
-      <p>Sign in with your authorized BHS Firebase account to update staff statuses.</p>
+      <p>Sign in with your authorized BHS Firebase account to manage all staff and copy self-update links.</p>
       <form id="loginForm">
         <div class="form-group">
           <label for="loginEmail">Email Address</label>
@@ -627,7 +676,7 @@
   <div class="modal-backdrop" id="addStaffModal">
     <div class="modal">
       <h2>Add Staff Member</h2>
-      <p>Add a new person to the live status board.</p>
+      <p>Add a new person to the live status board (a personal self-update link will be generated automatically).</p>
       <form id="addStaffForm">
         <div class="form-group">
           <label for="newStaffName">Full Name &amp; Title</label>
@@ -679,28 +728,40 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
+    // Parse URL parameters for personalized self-update links (?staff=...&token=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlStaffId = urlParams.get("staff") || "";
+    const urlToken = urlParams.get("token") || "";
+    let showFullBoardInSelfMode = false;
+
+    function generateToken() {
+      return Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
+    }
+
     const DEFAULT_STAFF = [
-      { id: "staff_01", name: "Mr S Scott", role: "Leadership / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_02", name: "Mr P Milne", role: "Leadership / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_03", name: "Mr H May", role: "Leadership / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_04", name: "Mrs Liversage", role: "Administration / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_05", name: "Mrs Cloete", role: "Administration / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_06", name: "Mrs Van Heerden", role: "Administration / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_07", name: "Mrs Jonker", role: "Administration / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_08", name: "Mrs Scott", role: "Administration / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_09", name: "Mrs Jabaar", role: "Administration / Staff", status: "in", note: "", updatedAt: Date.now() },
-      { id: "staff_10", name: "Mrs C Jacobs", role: "Administration / Staff", status: "in", note: "", updatedAt: Date.now() }
+      { id: "staff_01", name: "Mr S Scott", role: "Leadership / Staff", status: "in", note: "", token: "bhs_scott_s1", updatedAt: Date.now() },
+      { id: "staff_02", name: "Mr P Milne", role: "Leadership / Staff", status: "in", note: "", token: "bhs_milne_p2", updatedAt: Date.now() },
+      { id: "staff_03", name: "Mr H May", role: "Leadership / Staff", status: "in", note: "", token: "bhs_may_h3", updatedAt: Date.now() },
+      { id: "staff_04", name: "Mrs Liversage", role: "Administration / Staff", status: "in", note: "", token: "bhs_liversage_4", updatedAt: Date.now() },
+      { id: "staff_05", name: "Mrs Cloete", role: "Administration / Staff", status: "in", note: "", token: "bhs_cloete_5", updatedAt: Date.now() },
+      { id: "staff_06", name: "Mrs Van Heerden", role: "Administration / Staff", status: "in", note: "", token: "bhs_vanheerden_6", updatedAt: Date.now() },
+      { id: "staff_07", name: "Mrs Jonker", role: "Administration / Staff", status: "in", note: "", token: "bhs_jonker_7", updatedAt: Date.now() },
+      { id: "staff_08", name: "Mrs Scott", role: "Administration / Staff", status: "in", note: "", token: "bhs_scott_8", updatedAt: Date.now() },
+      { id: "staff_09", name: "Mrs Jabaar", role: "Administration / Staff", status: "in", note: "", token: "bhs_jabaar_9", updatedAt: Date.now() },
+      { id: "staff_10", name: "Mrs C Jacobs", role: "Administration / Staff", status: "in", note: "", token: "bhs_jacobs_10", updatedAt: Date.now() }
     ];
 
     let currentUser = null;
     let staffData = {};
     let searchFilter = "";
 
-    // DOM Elements
     const staffGrid = document.getElementById("staffGrid");
     const syncDot = document.getElementById("syncDot");
     const syncText = document.getElementById("syncText");
     const alertBanner = document.getElementById("alertBanner");
+    const personalBanner = document.getElementById("personalBanner");
+    const personalBannerTitle = document.getElementById("personalBannerTitle");
+    const showAllBoardBtn = document.getElementById("showAllBoardBtn");
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const modeIndicator = document.getElementById("modeIndicator");
@@ -742,6 +803,21 @@
         .replace(/"/g, "&quot;");
     }
 
+    function buildPersonalUrl(id, token) {
+      const base = window.location.origin + window.location.pathname;
+      return `${base}?staff=${encodeURIComponent(id)}&token=${encodeURIComponent(token)}`;
+    }
+
+    function isSelfAuthorized(person) {
+      return Boolean(
+        urlStaffId &&
+        urlToken &&
+        person.id === urlStaffId &&
+        person.token &&
+        person.token === urlToken
+      );
+    }
+
     // Connection state monitor
     const connectedRef = ref(db, ".info/connected");
     onValue(connectedRef, (snap) => {
@@ -775,6 +851,7 @@
         } else {
           staffData = val;
         }
+        updateModeUI();
         renderBoard();
       },
       (error) => {
@@ -782,34 +859,70 @@
       }
     );
 
-    // Auth state listener
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (user) {
+    function updateModeUI() {
+      const targetPerson = urlStaffId && staffData[urlStaffId]
+        ? { id: urlStaffId, ...staffData[urlStaffId] }
+        : null;
+      const selfMode = targetPerson && isSelfAuthorized(targetPerson);
+
+      if (currentUser) {
         loginBtn.style.display = "none";
         logoutBtn.style.display = "inline-flex";
         addStaffBtn.style.display = "inline-flex";
         resetAllInBtn.style.display = "inline-flex";
+        personalBanner.classList.remove("active");
         modeIndicator.className = "mode-badge mode-edit";
-        modeIndicator.textContent = `Edit Mode (${user.email})`;
-
-        if (Object.keys(staffData).length === 0 || !staffData.staff_01) {
-          const initialPayload = {};
-          DEFAULT_STAFF.forEach((s) => { initialPayload[s.id] = s; });
-          try {
-            await update(staffRef, initialPayload);
-          } catch (e) {
-            showBanner("Write permission error: Check Firebase Rules (" + e.message + ")", "error");
-          }
-        }
+        modeIndicator.textContent = `Admin Edit Mode (${currentUser.email})`;
+      } else if (selfMode) {
+        loginBtn.style.display = "inline-flex";
+        logoutBtn.style.display = "none";
+        addStaffBtn.style.display = "none";
+        resetAllInBtn.style.display = "none";
+        personalBanner.classList.add("active");
+        personalBannerTitle.textContent = `Welcome, ${targetPerson.name} — Personal Status Link`;
+        showAllBoardBtn.textContent = showFullBoardInSelfMode ? "Focus Only My Card" : "View Full School Board";
+        modeIndicator.className = "mode-badge mode-self";
+        modeIndicator.textContent = `Personal Update Mode (${targetPerson.name})`;
       } else {
         loginBtn.style.display = "inline-flex";
         logoutBtn.style.display = "none";
         addStaffBtn.style.display = "none";
         resetAllInBtn.style.display = "none";
+        personalBanner.classList.remove("active");
         modeIndicator.className = "mode-badge mode-view";
         modeIndicator.textContent = "Public View Mode (Live Sync Active)";
       }
+    }
+
+    showAllBoardBtn.addEventListener("click", () => {
+      showFullBoardInSelfMode = !showFullBoardInSelfMode;
+      updateModeUI();
+      renderBoard();
+    });
+
+    // Auth state listener
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (user) {
+        // Ensure every existing staff record has a token stored in Firebase so personal links work
+        const tokenBackfill = {};
+        let needsBackfill = false;
+        Object.entries(staffData).forEach(([id, item]) => {
+          if (!item.token) {
+            const defaultMatch = DEFAULT_STAFF.find((d) => d.id === id);
+            tokenBackfill[`${id}/token`] = defaultMatch ? defaultMatch.token : generateToken();
+            needsBackfill = true;
+          }
+        });
+        if (needsBackfill) {
+          try {
+            await update(staffRef, tokenBackfill);
+          } catch (e) {
+            console.warn("Token backfill note:", e.message);
+          }
+        }
+      }
+      updateModeUI();
       renderBoard();
     });
 
@@ -836,33 +949,49 @@
       document.getElementById("countMeeting").textContent = meetingCount;
       document.getElementById("countOut").textContent = outCount;
 
-      const filtered = entries.filter((s) => {
-        if (!searchFilter) return true;
+      const hasValidSelfLink = entries.some((p) => isSelfAuthorized(p));
+
+      let visibleEntries = entries;
+      if (hasValidSelfLink && !currentUser && !showFullBoardInSelfMode) {
+        visibleEntries = entries.filter((p) => p.id === urlStaffId);
+      } else if (searchFilter) {
         const q = searchFilter.toLowerCase();
-        return (
+        visibleEntries = entries.filter((s) =>
           (s.name && s.name.toLowerCase().includes(q)) ||
           (s.role && s.role.toLowerCase().includes(q)) ||
           (s.note && s.note.toLowerCase().includes(q))
         );
-      });
+      }
 
       staffGrid.innerHTML = "";
 
-      filtered.forEach((person) => {
+      visibleEntries.forEach((person) => {
         const status = person.status || "in";
         const statusLabel =
           status === "in" ? "IN" : status === "meeting" ? "MEETING / CLASS" : "OUT";
 
+        const isSelfCard = isSelfAuthorized(person);
+        const canEditCard = Boolean(currentUser) || isSelfCard;
+
         const card = document.createElement("article");
-        card.className = `staff-card status-${status}`;
+        card.className = `staff-card status-${status} ${isSelfCard ? "self-highlight" : ""}`;
 
         const noteHtml = person.note
           ? `<div class="note-box">${escapeHtml(person.note)}</div>`
           : `<div class="note-box empty">No status note</div>`;
 
-        let adminHtml = "";
-        if (currentUser) {
-          adminHtml = `
+        let controlsHtml = "";
+        if (canEditCard) {
+          const adminFooterHtml = currentUser
+            ? `
+              <div class="card-footer-admin">
+                <button type="button" class="copy-link-btn" data-action="copy-link" data-id="${escapeHtml(person.id)}" data-name="${escapeHtml(person.name)}">Copy Personal Link</button>
+                <button type="button" class="remove-link" data-action="remove" data-id="${escapeHtml(person.id)}" data-name="${escapeHtml(person.name)}">Remove</button>
+              </div>
+            `
+            : "";
+
+          controlsHtml = `
             <div class="edit-controls">
               <div class="status-btn-row">
                 <button type="button" class="status-toggle ${status === "in" ? "active-in" : ""}" data-action="status" data-id="${escapeHtml(person.id)}" data-val="in">IN</button>
@@ -873,9 +1002,7 @@
                 <input type="text" class="note-input" id="note-${escapeHtml(person.id)}" value="${escapeHtml(person.note || "")}" placeholder="Add location or return note..." />
                 <button type="button" class="btn btn-teal" style="padding:0.4rem 0.7rem; font-size:0.8rem;" data-action="save-note" data-id="${escapeHtml(person.id)}">Save</button>
               </div>
-              <div class="card-footer-admin">
-                <button type="button" class="remove-link" data-action="remove" data-id="${escapeHtml(person.id)}" data-name="${escapeHtml(person.name)}">Remove</button>
-              </div>
+              ${adminFooterHtml}
             </div>
           `;
         }
@@ -893,7 +1020,7 @@
           </div>
           <div>
             <div class="updated-meta">Updated: ${formatTime(person.updatedAt)}</div>
-            ${adminHtml}
+            ${controlsHtml}
           </div>
         `;
 
@@ -901,13 +1028,18 @@
       });
     }
 
-    // Delegated click handler for card admin buttons
+    // Delegated click handler for card actions
     staffGrid.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
-      if (!btn || !currentUser) return;
+      if (!btn) return;
 
       const action = btn.dataset.action;
       const id = btn.dataset.id;
+      const person = staffData[id] ? { id, ...staffData[id] } : null;
+      if (!person) return;
+
+      const permitted = Boolean(currentUser) || isSelfAuthorized(person);
+      if (!permitted) return;
 
       try {
         if (action === "status") {
@@ -916,6 +1048,9 @@
             status: newStatus,
             updatedAt: Date.now()
           });
+          if (!currentUser) {
+            showBanner(`Status updated to ${newStatus.toUpperCase()}.`, "info");
+          }
         } else if (action === "save-note") {
           const input = document.getElementById(`note-${id}`);
           await update(ref(db, `${ROSTER_PATH}/${id}`), {
@@ -923,7 +1058,16 @@
             updatedAt: Date.now()
           });
           showBanner("Note updated across all screens.", "info");
-        } else if (action === "remove") {
+        } else if (action === "copy-link" && currentUser) {
+          let token = person.token;
+          if (!token) {
+            token = generateToken();
+            await update(ref(db, `${ROSTER_PATH}/${id}`), { token });
+          }
+          const personalLink = buildPersonalUrl(id, token);
+          await navigator.clipboard.writeText(personalLink);
+          showBanner(`Copied personal self-update link for ${person.name}!`, "info");
+        } else if (action === "remove" && currentUser) {
           const name = btn.dataset.name || "this staff member";
           if (confirm(`Remove ${name} from the status board?`)) {
             await remove(ref(db, `${ROSTER_PATH}/${id}`));
@@ -935,13 +1079,11 @@
       }
     });
 
-    // Search filter
     searchInput.addEventListener("input", (e) => {
       searchFilter = e.target.value.trim();
       renderBoard();
     });
 
-    // Mark All In
     resetAllInBtn.addEventListener("click", async () => {
       if (!currentUser) return;
       if (!confirm("Set all staff members to IN and clear notes?")) return;
@@ -959,7 +1101,6 @@
       }
     });
 
-    // Login Modal handlers
     loginBtn.addEventListener("click", () => {
       loginError.style.display = "none";
       loginForm.reset();
@@ -983,7 +1124,7 @@
       try {
         await signInWithEmailAndPassword(auth, email, password);
         loginModal.classList.remove("open");
-        showBanner("Signed in — Edit Mode enabled.", "info");
+        showBanner("Signed in — Admin Edit Mode enabled.", "info");
       } catch (err) {
         loginError.textContent = "Sign-in failed: " + err.message;
         loginError.style.display = "block";
@@ -995,10 +1136,9 @@
 
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      showBanner("Signed out — switched to Public View Mode.", "info");
+      showBanner("Signed out.", "info");
     });
 
-    // Add Staff Modal handlers
     addStaffBtn.addEventListener("click", () => {
       addStaffForm.reset();
       addStaffModal.classList.add("open");
@@ -1022,6 +1162,7 @@
           role,
           status: "in",
           note: "",
+          token: generateToken(),
           updatedAt: Date.now()
         });
         addStaffModal.classList.remove("open");
@@ -1031,7 +1172,6 @@
       }
     });
 
-    // Live footer clock
     function updateClock() {
       const el = document.getElementById("clockDisplay");
       if (el) {
