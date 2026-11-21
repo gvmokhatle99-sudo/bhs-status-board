@@ -450,45 +450,20 @@
     }
 
     .staff-card.live-flash {
-      --glow-color: rgba(212, 160, 23, 0.72);
-      --glow-soft: rgba(212, 160, 23, 0.32);
-      border-color: var(--gold);
-      animation: liveCardPulse 2.3s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .staff-card.live-flash.status-in {
-      --glow-color: rgba(22, 163, 74, 0.65);
-      --glow-soft: rgba(212, 160, 23, 0.42);
-      border-color: #22c55e;
-    }
-
-    .staff-card.live-flash.status-meeting {
-      --glow-color: rgba(217, 119, 6, 0.72);
-      --glow-soft: rgba(212, 160, 23, 0.45);
-      border-color: #f59e0b;
-    }
-
-    .staff-card.live-flash.status-out {
-      --glow-color: rgba(220, 38, 38, 0.68);
-      --glow-soft: rgba(212, 160, 23, 0.42);
-      border-color: #ef4444;
+      animation: liveCardPulse 1.55s ease-out;
     }
 
     @keyframes liveCardPulse {
       0% {
-        transform: translateY(-4px) scale(1.012);
-        box-shadow: 0 0 0 4px var(--glow-color), 0 0 28px var(--glow-color), 0 14px 28px rgba(15, 39, 68, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.45), 0 10px 22px rgba(15, 39, 68, 0.14);
       }
-      38% {
-        transform: translateY(-2px) scale(1.006);
-        box-shadow: 0 0 0 5px var(--glow-soft), 0 0 22px var(--glow-soft), 0 10px 22px rgba(15, 39, 68, 0.14);
-      }
-      75% {
-        transform: translateY(-1px) scale(1);
-        box-shadow: 0 0 0 3px var(--glow-soft), 0 0 12px var(--glow-soft), 0 5px 12px rgba(15, 39, 68, 0.09);
+      65% {
+        transform: translateY(0);
+        box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.2), 0 4px 10px rgba(15, 39, 68, 0.08);
       }
       100% {
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
         box-shadow: 0 2px 6px rgba(15, 39, 68, 0.06);
       }
     }
@@ -1117,7 +1092,7 @@
           recentlyChangedIds.add(id);
           setTimeout(() => {
             recentlyChangedIds.delete(id);
-          }, 2350);
+          }, 1650);
         }
       });
       prevUpdatedMap = nextMap;
@@ -1289,4 +1264,279 @@
       if (prevCounts) {
         if (prevCounts.total !== entries.length) bumpElement(totalEl);
         if (prevCounts.in !== inCount) bumpElement(inEl);
-        if (prev
+        if (prevCounts.meeting !== meetingCount) bumpElement(meetingEl);
+        if (prevCounts.out !== outCount) bumpElement(outEl);
+      }
+      prevCounts = { total: entries.length, in: inCount, meeting: meetingCount, out: outCount };
+
+      const hasValidSelfLink = entries.some((p) => isSelfAuthorized(p));
+
+      let visibleEntries = entries;
+      if (hasValidSelfLink && !currentUser && !displayModeActive && !showFullBoardInSelfMode) {
+        visibleEntries = entries.filter((p) => p.id === urlStaffId);
+      } else {
+        if (!displayModeActive && statusFilter !== "all") {
+          visibleEntries = visibleEntries.filter((s) => (s.status || "in") === statusFilter);
+        }
+        if (searchFilter && !displayModeActive) {
+          const q = searchFilter.toLowerCase();
+          visibleEntries = visibleEntries.filter((s) =>
+            (s.name && s.name.toLowerCase().includes(q)) ||
+            (s.role && s.role.toLowerCase().includes(q)) ||
+            (s.note && s.note.toLowerCase().includes(q))
+          );
+        }
+      }
+
+      staffGrid.innerHTML = "";
+
+      if (visibleEntries.length === 0) {
+        const emptyEl = document.createElement("div");
+        emptyEl.className = "empty-state";
+        emptyEl.textContent = "No staff members match the current filter.";
+        staffGrid.appendChild(emptyEl);
+        return;
+      }
+
+      visibleEntries.forEach((person) => {
+        const status = person.status || "in";
+        const statusLabel =
+          status === "in" ? "IN" : status === "meeting" ? "MEETING / CLASS" : "OUT";
+
+        const isSelfCard = !displayModeActive && isSelfAuthorized(person);
+        const canEditCard = !displayModeActive && (Boolean(currentUser) || isSelfCard);
+        const flashClass = recentlyChangedIds.has(person.id) ? "live-flash" : "";
+
+        const card = document.createElement("article");
+        card.className = `staff-card status-${status} ${isSelfCard ? "self-highlight" : ""} ${flashClass}`;
+
+        const noteHtml = person.note
+          ? `<div class="note-box">${escapeHtml(person.note)}</div>`
+          : `<div class="note-box empty">No status note</div>`;
+
+        let controlsHtml = "";
+        if (canEditCard) {
+          const presetChipsHtml = QUICK_PRESETS.map((preset) => {
+            const isActive = (person.note || "").trim().toLowerCase() === preset.toLowerCase();
+            return `<button type="button" class="preset-chip ${isActive ? "active-preset" : ""}" data-action="preset-note" data-id="${escapeHtml(person.id)}" data-note="${escapeHtml(preset)}">${escapeHtml(preset)}</button>`;
+          }).join("");
+
+          const adminFooterHtml = currentUser
+            ? `
+              <div class="card-footer-admin">
+                <button type="button" class="copy-link-btn" data-action="copy-link" data-id="${escapeHtml(person.id)}" data-name="${escapeHtml(person.name)}">Copy Personal Link</button>
+                <button type="button" class="remove-link" data-action="remove" data-id="${escapeHtml(person.id)}" data-name="${escapeHtml(person.name)}">Remove</button>
+              </div>
+            `
+            : "";
+
+          controlsHtml = `
+            <div class="edit-controls">
+              <div class="status-btn-row">
+                <button type="button" class="status-toggle ${status === "in" ? "active-in" : ""}" data-action="status" data-id="${escapeHtml(person.id)}" data-val="in">IN</button>
+                <button type="button" class="status-toggle ${status === "meeting" ? "active-meeting" : ""}" data-action="status" data-id="${escapeHtml(person.id)}" data-val="meeting">MEETING</button>
+                <button type="button" class="status-toggle ${status === "out" ? "active-out" : ""}" data-action="status" data-id="${escapeHtml(person.id)}" data-val="out">OUT</button>
+              </div>
+              <div class="preset-row">${presetChipsHtml}</div>
+              <div class="note-edit-row">
+                <input type="text" class="note-input" id="note-${escapeHtml(person.id)}" value="${escapeHtml(person.note || "")}" placeholder="Custom location or return note..." />
+                <button type="button" class="btn btn-teal" style="padding:0.4rem 0.65rem; font-size:0.78rem;" data-action="save-note" data-id="${escapeHtml(person.id)}">Save</button>
+                <button type="button" class="btn btn-ghost" style="padding:0.4rem 0.6rem; font-size:0.78rem;" data-action="clear-note" data-id="${escapeHtml(person.id)}">Clear</button>
+              </div>
+              ${adminFooterHtml}
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="card-top">
+              <div>
+                <div class="staff-name">${escapeHtml(person.name)}</div>
+                <div class="staff-role">${escapeHtml(person.role || "Staff")}</div>
+              </div>
+              <span class="status-pill ${status}">${statusLabel}</span>
+            </div>
+            <div style="margin-top:0.75rem;">${noteHtml}</div>
+          </div>
+          <div>
+            <div class="updated-meta">Updated: ${formatTime(person.updatedAt)}</div>
+            ${controlsHtml}
+          </div>
+        `;
+
+        staffGrid.appendChild(card);
+      });
+    }
+
+    staffGrid.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn || displayModeActive) return;
+
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+      const person = staffData[id] ? { id, ...staffData[id] } : null;
+      if (!person) return;
+
+      const permitted = Boolean(currentUser) || isSelfAuthorized(person);
+      if (!permitted) return;
+
+      try {
+        if (action === "status") {
+          const newStatus = btn.dataset.val;
+          await update(ref(db, `${ROSTER_PATH}/${id}`), {
+            status: newStatus,
+            updatedAt: Date.now()
+          });
+          if (!currentUser) {
+            showBanner(`Status updated to ${newStatus.toUpperCase()}.`, "info");
+          }
+        } else if (action === "preset-note") {
+          const presetNote = btn.dataset.note || "";
+          await update(ref(db, `${ROSTER_PATH}/${id}`), {
+            note: presetNote,
+            updatedAt: Date.now()
+          });
+          showBanner(`Note set to "${presetNote}".`, "info");
+        } else if (action === "save-note") {
+          const input = document.getElementById(`note-${id}`);
+          await update(ref(db, `${ROSTER_PATH}/${id}`), {
+            note: input ? input.value.trim() : "",
+            updatedAt: Date.now()
+          });
+          showBanner("Note updated across all screens.", "info");
+        } else if (action === "clear-note") {
+          await update(ref(db, `${ROSTER_PATH}/${id}`), {
+            note: "",
+            updatedAt: Date.now()
+          });
+          showBanner("Note cleared.", "info");
+        } else if (action === "copy-link" && currentUser) {
+          let token = person.token;
+          if (!token) {
+            token = generateToken();
+            await update(ref(db, `${ROSTER_PATH}/${id}`), { token });
+          }
+          const personalLink = buildPersonalUrl(id, token);
+          await navigator.clipboard.writeText(personalLink);
+          showBanner(`Copied personal self-update link for ${person.name}!`, "info");
+        } else if (action === "remove" && currentUser) {
+          const name = btn.dataset.name || "this staff member";
+          if (confirm(`Remove ${name} from the status board?`)) {
+            await remove(ref(db, `${ROSTER_PATH}/${id}`));
+            showBanner(`${name} removed from board.`, "info");
+          }
+        }
+      } catch (err) {
+        showBanner("Update failed: " + err.message, "error");
+      }
+    });
+
+    searchInput.addEventListener("input", (e) => {
+      searchFilter = e.target.value.trim();
+      renderBoard();
+    });
+
+    resetAllInBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+      if (!confirm("Set all staff members to IN and clear notes?")) return;
+      try {
+        const updates = {};
+        Object.keys(staffData).forEach((id) => {
+          updates[`${ROSTER_PATH}/${id}/status`] = "in";
+          updates[`${ROSTER_PATH}/${id}/note`] = "";
+          updates[`${ROSTER_PATH}/${id}/updatedAt`] = Date.now();
+        });
+        await update(ref(db), updates);
+        showBanner("All staff marked IN.", "info");
+      } catch (err) {
+        showBanner("Bulk update failed: " + err.message, "error");
+      }
+    });
+
+    loginBtn.addEventListener("click", () => {
+      loginError.style.display = "none";
+      loginForm.reset();
+      loginModal.classList.add("open");
+    });
+
+    cancelLoginBtn.addEventListener("click", () => {
+      loginModal.classList.remove("open");
+    });
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const submitBtn = document.getElementById("submitLoginBtn");
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Signing in...";
+      loginError.style.display = "none";
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        loginModal.classList.remove("open");
+        showBanner("Signed in — Admin Edit Mode enabled.", "info");
+      } catch (err) {
+        loginError.textContent = "Sign-in failed: " + err.message;
+        loginError.style.display = "block";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Sign In";
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      showBanner("Signed out.", "info");
+    });
+
+    addStaffBtn.addEventListener("click", () => {
+      addStaffForm.reset();
+      addStaffModal.classList.add("open");
+    });
+
+    cancelAddStaffBtn.addEventListener("click", () => {
+      addStaffModal.classList.remove("open");
+    });
+
+    addStaffForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+      const name = document.getElementById("newStaffName").value.trim();
+      const role = document.getElementById("newStaffRole").value.trim() || "Staff";
+      if (!name) return;
+
+      try {
+        const newRef = push(staffRef);
+        await set(newRef, {
+          name,
+          role,
+          status: "in",
+          note: "",
+          token: generateToken(),
+          updatedAt: Date.now()
+        });
+        addStaffModal.classList.remove("open");
+        showBanner(`${name} added to the board.`, "info");
+      } catch (err) {
+        showBanner("Could not add staff: " + err.message, "error");
+      }
+    });
+
+    function updateClock() {
+      const el = document.getElementById("clockDisplay");
+      if (el) {
+        el.textContent = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+      }
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
