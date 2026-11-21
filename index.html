@@ -450,20 +450,45 @@
     }
 
     .staff-card.live-flash {
-      animation: liveCardPulse 1.55s ease-out;
+      --glow-color: rgba(212, 160, 23, 0.72);
+      --glow-soft: rgba(212, 160, 23, 0.32);
+      border-color: var(--gold);
+      animation: liveCardPulse 2.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .staff-card.live-flash.status-in {
+      --glow-color: rgba(22, 163, 74, 0.65);
+      --glow-soft: rgba(212, 160, 23, 0.42);
+      border-color: #22c55e;
+    }
+
+    .staff-card.live-flash.status-meeting {
+      --glow-color: rgba(217, 119, 6, 0.72);
+      --glow-soft: rgba(212, 160, 23, 0.45);
+      border-color: #f59e0b;
+    }
+
+    .staff-card.live-flash.status-out {
+      --glow-color: rgba(220, 38, 38, 0.68);
+      --glow-soft: rgba(212, 160, 23, 0.42);
+      border-color: #ef4444;
     }
 
     @keyframes liveCardPulse {
       0% {
-        transform: translateY(-2px);
-        box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.45), 0 10px 22px rgba(15, 39, 68, 0.14);
+        transform: translateY(-4px) scale(1.012);
+        box-shadow: 0 0 0 4px var(--glow-color), 0 0 28px var(--glow-color), 0 14px 28px rgba(15, 39, 68, 0.2);
       }
-      65% {
-        transform: translateY(0);
-        box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.2), 0 4px 10px rgba(15, 39, 68, 0.08);
+      38% {
+        transform: translateY(-2px) scale(1.006);
+        box-shadow: 0 0 0 5px var(--glow-soft), 0 0 22px var(--glow-soft), 0 10px 22px rgba(15, 39, 68, 0.14);
+      }
+      75% {
+        transform: translateY(-1px) scale(1);
+        box-shadow: 0 0 0 3px var(--glow-soft), 0 0 12px var(--glow-soft), 0 5px 12px rgba(15, 39, 68, 0.09);
       }
       100% {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         box-shadow: 0 2px 6px rgba(15, 39, 68, 0.06);
       }
     }
@@ -1092,7 +1117,7 @@
           recentlyChangedIds.add(id);
           setTimeout(() => {
             recentlyChangedIds.delete(id);
-          }, 1650);
+          }, 2350);
         }
       });
       prevUpdatedMap = nextMap;
