@@ -131,10 +131,29 @@
       height: 9px;
       border-radius: 50%;
       background: #fbbf24;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .sync-dot.online { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
-    .sync-dot.offline { background: #f87171; }
+    .sync-dot.online {
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
+      animation: liveBreath 2.6s ease-in-out infinite;
+    }
+
+    .sync-dot.offline {
+      background: #f87171;
+    }
+
+    @keyframes liveBreath {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.22);
+        opacity: 0.72;
+      }
+    }
 
     .btn {
       border: none;
@@ -143,10 +162,14 @@
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: transform 0.14s ease, background-color 0.15s ease, box-shadow 0.15s ease;
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.97);
     }
 
     .btn:disabled {
@@ -194,6 +217,7 @@
       margin-bottom: 1rem;
       font-size: 0.9rem;
       font-weight: 500;
+      animation: bannerSlideIn 0.2s ease-out;
     }
     .alert-banner.error {
       display: block;
@@ -206,6 +230,17 @@
       background: var(--teal-light);
       color: var(--navy);
       border: 1px solid #99f6e4;
+    }
+
+    @keyframes bannerSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .personal-banner {
@@ -223,6 +258,7 @@
     }
     .personal-banner.active {
       display: flex;
+      animation: cardEnter 0.22s ease-out;
     }
     .personal-banner h2 {
       font-size: 1.05rem;
@@ -249,6 +285,7 @@
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
     .stat-card span {
@@ -260,6 +297,18 @@
     .stat-card strong {
       font-size: 1.45rem;
       color: var(--navy);
+      display: inline-block;
+      transition: transform 0.22s ease;
+    }
+
+    .stat-card strong.bump {
+      animation: countBump 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes countBump {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.18); }
+      100% { transform: scale(1); }
     }
 
     .toolbar {
@@ -280,6 +329,7 @@
       font-weight: 600;
       padding: 0.35rem 0.75rem;
       border-radius: 6px;
+      transition: all 0.18s ease;
     }
     .mode-view {
       background: #e2e8f0;
@@ -327,7 +377,7 @@
       padding: 0.35rem 0.65rem;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.12s ease;
+      transition: all 0.15s ease;
     }
 
     .filter-tab:hover {
@@ -338,6 +388,7 @@
     .filter-tab.active {
       background: var(--navy);
       color: #fff;
+      box-shadow: 0 1px 3px rgba(15, 39, 68, 0.2);
     }
 
     .search-input {
@@ -346,6 +397,12 @@
       border-radius: 8px;
       font-size: 0.9rem;
       min-width: 210px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(14, 124, 123, 0.14);
     }
 
     .staff-grid {
@@ -363,6 +420,7 @@
       text-align: center;
       color: var(--muted);
       font-size: 0.92rem;
+      animation: cardEnter 0.18s ease-out;
     }
 
     .staff-card {
@@ -376,6 +434,38 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 0.85rem;
+      animation: cardEnter 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: border-left-color 0.22s ease, box-shadow 0.22s ease, transform 0.2s ease;
+    }
+
+    @keyframes cardEnter {
+      from {
+        opacity: 0;
+        transform: translateY(7px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .staff-card.live-flash {
+      animation: liveCardPulse 1.55s ease-out;
+    }
+
+    @keyframes liveCardPulse {
+      0% {
+        transform: translateY(-2px);
+        box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.45), 0 10px 22px rgba(15, 39, 68, 0.14);
+      }
+      65% {
+        transform: translateY(0);
+        box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.2), 0 4px 10px rgba(15, 39, 68, 0.08);
+      }
+      100% {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(15, 39, 68, 0.06);
+      }
     }
 
     .staff-card.self-highlight {
@@ -415,6 +505,7 @@
       letter-spacing: 0.4px;
       text-transform: uppercase;
       white-space: nowrap;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.18s ease;
     }
 
     .status-pill.in {
@@ -443,6 +534,7 @@
       font-size: 0.86rem;
       color: #334155;
       min-height: 36px;
+      transition: background-color 0.18s ease, border-color 0.18s ease;
     }
 
     .note-box.empty {
@@ -478,6 +570,11 @@
       font-weight: 700;
       cursor: pointer;
       color: var(--text);
+      transition: all 0.15s ease;
+    }
+
+    .status-toggle:active {
+      transform: scale(0.97);
     }
 
     .status-toggle.active-in {
@@ -513,13 +610,18 @@
       font-size: 0.74rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.12s ease;
+      transition: all 0.14s ease;
     }
 
     .preset-chip:hover {
       background: var(--teal-light);
       border-color: var(--teal);
       color: var(--teal);
+      transform: translateY(-1px);
+    }
+
+    .preset-chip:active {
+      transform: scale(0.96);
     }
 
     .preset-chip.active-preset {
@@ -540,6 +642,12 @@
       border: 1px solid var(--border);
       border-radius: 7px;
       font-size: 0.84rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .note-input:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 2px rgba(14, 124, 123, 0.14);
     }
 
     .card-footer-admin {
@@ -558,9 +666,13 @@
       font-size: 0.76rem;
       font-weight: 600;
       cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.12s ease;
     }
     .copy-link-btn:hover {
       background: #ccfbf1;
+    }
+    .copy-link-btn:active {
+      transform: scale(0.96);
     }
 
     .remove-link {
@@ -602,6 +714,19 @@
       padding: 0.38rem 0.85rem;
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      .sync-dot.online,
+      .staff-card,
+      .staff-card.live-flash,
+      .stat-card strong.bump,
+      .alert-banner,
+      .personal-banner.active,
+      .empty-state {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -615,6 +740,7 @@
 
     .modal-backdrop.open {
       display: flex;
+      animation: bannerSlideIn 0.18s ease-out;
     }
 
     .modal {
@@ -873,6 +999,10 @@
     let staffData = {};
     let searchFilter = "";
     let statusFilter = "all";
+    let hasLoadedInitialSnapshot = false;
+    let prevUpdatedMap = {};
+    let recentlyChangedIds = new Set();
+    let prevCounts = null;
 
     const staffGrid = document.getElementById("staffGrid");
     const syncDot = document.getElementById("syncDot");
@@ -945,6 +1075,30 @@
       });
     }
 
+    function bumpElement(el) {
+      if (!el) return;
+      el.classList.remove("bump");
+      void el.offsetWidth;
+      el.classList.add("bump");
+      setTimeout(() => el.classList.remove("bump"), 400);
+    }
+
+    function detectLiveChanges(nextData) {
+      const nextMap = {};
+      Object.entries(nextData).forEach(([id, item]) => {
+        const stamp = item.updatedAt || 0;
+        nextMap[id] = stamp;
+        if (hasLoadedInitialSnapshot && prevUpdatedMap[id] !== undefined && prevUpdatedMap[id] !== stamp) {
+          recentlyChangedIds.add(id);
+          setTimeout(() => {
+            recentlyChangedIds.delete(id);
+          }, 1650);
+        }
+      });
+      prevUpdatedMap = nextMap;
+      hasLoadedInitialSnapshot = true;
+    }
+
     const connectedRef = ref(db, ".info/connected");
     onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
@@ -976,6 +1130,7 @@
         } else {
           staffData = val;
         }
+        detectLiveChanges(staffData);
         updateModeUI();
         renderBoard();
       },
@@ -1096,10 +1251,23 @@
         else outCount++;
       });
 
-      document.getElementById("countTotal").textContent = entries.length;
-      document.getElementById("countIn").textContent = inCount;
-      document.getElementById("countMeeting").textContent = meetingCount;
-      document.getElementById("countOut").textContent = outCount;
+      const totalEl = document.getElementById("countTotal");
+      const inEl = document.getElementById("countIn");
+      const meetingEl = document.getElementById("countMeeting");
+      const outEl = document.getElementById("countOut");
+
+      totalEl.textContent = entries.length;
+      inEl.textContent = inCount;
+      meetingEl.textContent = meetingCount;
+      outEl.textContent = outCount;
+
+      if (prevCounts) {
+        if (prevCounts.total !== entries.length) bumpElement(totalEl);
+        if (prevCounts.in !== inCount) bumpElement(inEl);
+        if (prevCounts.meeting !== meetingCount) bumpElement(meetingEl);
+        if (prevCounts.out !== outCount) bumpElement(outEl);
+      }
+      prevCounts = { total: entries.length, in: inCount, meeting: meetingCount, out: outCount };
 
       const hasValidSelfLink = entries.some((p) => isSelfAuthorized(p));
 
@@ -1137,9 +1305,10 @@
 
         const isSelfCard = !displayModeActive && isSelfAuthorized(person);
         const canEditCard = !displayModeActive && (Boolean(currentUser) || isSelfCard);
+        const flashClass = recentlyChangedIds.has(person.id) ? "live-flash" : "";
 
         const card = document.createElement("article");
-        card.className = `staff-card status-${status} ${isSelfCard ? "self-highlight" : ""}`;
+        card.className = `staff-card status-${status} ${isSelfCard ? "self-highlight" : ""} ${flashClass}`;
 
         const noteHtml = person.note
           ? `<div class="note-box">${escapeHtml(person.note)}</div>`
