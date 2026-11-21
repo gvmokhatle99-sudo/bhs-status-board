@@ -68,11 +68,12 @@
     }
 
     .crest-badge {
-      width: 52px;
-      height: 52px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       background: #fff;
       border: 2px solid var(--gold);
+      padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -449,13 +450,44 @@
       border-color: #b91c1c;
     }
 
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .preset-chip {
+      background: #f1f5f9;
+      color: var(--navy);
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      padding: 0.22rem 0.6rem;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .preset-chip:hover {
+      background: var(--teal-light);
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .preset-chip.active-preset {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
     .note-edit-row {
       display: flex;
-      gap: 0.4rem;
+      gap: 0.35rem;
     }
 
     .note-input {
       flex: 1;
+      min-width: 0;
       padding: 0.42rem 0.6rem;
       border: 1px solid var(--border);
       border-radius: 7px;
@@ -580,7 +612,7 @@
     <div class="header-inner">
       <div class="brand">
         <div class="crest-badge">
-          <img src="crest.png" alt="BHS Crest" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <img src="crest.png" alt="Bloemfontein High School Crest" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
           <span class="crest-fallback" style="display:none;">BHS</span>
         </div>
         <div class="brand-text">
@@ -723,12 +755,12 @@
     };
 
     const ROSTER_PATH = "bhs_leadership_board/roster_state";
+    const QUICK_PRESETS = ["In class", "Admin office", "Staffroom", "Off campus", "Back soon"];
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // Parse URL parameters for personalized self-update links (?staff=...&token=...)
     const urlParams = new URLSearchParams(window.location.search);
     const urlStaffId = urlParams.get("staff") || "";
     const urlToken = urlParams.get("token") || "";
@@ -818,7 +850,6 @@
       );
     }
 
-    // Connection state monitor
     const connectedRef = ref(db, ".info/connected");
     onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
@@ -830,7 +861,6 @@
       }
     });
 
-    // Listen to staff list in real time
     const staffRef = ref(db, ROSTER_PATH);
     onValue(
       staffRef,
@@ -900,11 +930,9 @@
       renderBoard();
     });
 
-    // Auth state listener
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (user) {
-        // Ensure every existing staff record has a token stored in Firebase so personal links work
         const tokenBackfill = {};
         let needsBackfill = false;
         Object.entries(staffData).forEach(([id, item]) => {
@@ -982,6 +1010,11 @@
 
         let controlsHtml = "";
         if (canEditCard) {
+          const presetChipsHtml = QUICK_PRESETS.map((preset) => {
+            const isActive = (person.note || "").trim().toLowerCase() === preset.toLowerCase();
+            return `<button type="button" class="preset-chip ${isActive ? "active-preset" : ""}" data-action="preset-note" data-id="${escapeHtml(person.id)}" data-note="${escapeHtml(preset)}">${escapeHtml(preset)}</button>`;
+          }).join("");
+
           const adminFooterHtml = currentUser
             ? `
               <div class="card-footer-admin">
@@ -998,9 +1031,11 @@
                 <button type="button" class="status-toggle ${status === "meeting" ? "active-meeting" : ""}" data-action="status" data-id="${escapeHtml(person.id)}" data-val="meeting">MEETING</button>
                 <button type="button" class="status-toggle ${status === "out" ? "active-out" : ""}" data-action="status" data-id="${escapeHtml(person.id)}" data-val="out">OUT</button>
               </div>
+              <div class="preset-row">${presetChipsHtml}</div>
               <div class="note-edit-row">
-                <input type="text" class="note-input" id="note-${escapeHtml(person.id)}" value="${escapeHtml(person.note || "")}" placeholder="Add location or return note..." />
-                <button type="button" class="btn btn-teal" style="padding:0.4rem 0.7rem; font-size:0.8rem;" data-action="save-note" data-id="${escapeHtml(person.id)}">Save</button>
+                <input type="text" class="note-input" id="note-${escapeHtml(person.id)}" value="${escapeHtml(person.note || "")}" placeholder="Custom location or return note..." />
+                <button type="button" class="btn btn-teal" style="padding:0.4rem 0.65rem; font-size:0.78rem;" data-action="save-note" data-id="${escapeHtml(person.id)}">Save</button>
+                <button type="button" class="btn btn-ghost" style="padding:0.4rem 0.6rem; font-size:0.78rem;" data-action="clear-note" data-id="${escapeHtml(person.id)}">Clear</button>
               </div>
               ${adminFooterHtml}
             </div>
@@ -1028,7 +1063,6 @@
       });
     }
 
-    // Delegated click handler for card actions
     staffGrid.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
       if (!btn) return;
@@ -1051,6 +1085,13 @@
           if (!currentUser) {
             showBanner(`Status updated to ${newStatus.toUpperCase()}.`, "info");
           }
+        } else if (action === "preset-note") {
+          const presetNote = btn.dataset.note || "";
+          await update(ref(db, `${ROSTER_PATH}/${id}`), {
+            note: presetNote,
+            updatedAt: Date.now()
+          });
+          showBanner(`Note set to "${presetNote}".`, "info");
         } else if (action === "save-note") {
           const input = document.getElementById(`note-${id}`);
           await update(ref(db, `${ROSTER_PATH}/${id}`), {
@@ -1058,6 +1099,12 @@
             updatedAt: Date.now()
           });
           showBanner("Note updated across all screens.", "info");
+        } else if (action === "clear-note") {
+          await update(ref(db, `${ROSTER_PATH}/${id}`), {
+            note: "",
+            updatedAt: Date.now()
+          });
+          showBanner("Note cleared.", "info");
         } else if (action === "copy-link" && currentUser) {
           let token = person.token;
           if (!token) {
