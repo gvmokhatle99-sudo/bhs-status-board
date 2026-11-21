@@ -295,6 +295,11 @@
       color: var(--teal);
       border: 1px solid var(--teal);
     }
+    .mode-display {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
 
     .toolbar-actions {
       display: flex;
@@ -524,6 +529,36 @@
       text-decoration: underline;
     }
 
+    /* Front-Desk Display Mode adjustments */
+    body.display-mode .toolbar,
+    body.display-mode #loginBtn,
+    body.display-mode #logoutBtn,
+    body.display-mode #personalBanner {
+      display: none !important;
+    }
+
+    body.display-mode .stat-card {
+      padding: 1.05rem 1.2rem;
+    }
+
+    body.display-mode .stat-card strong {
+      font-size: 1.7rem;
+    }
+
+    body.display-mode .staff-grid {
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 1.15rem;
+    }
+
+    body.display-mode .staff-name {
+      font-size: 1.2rem;
+    }
+
+    body.display-mode .status-pill {
+      font-size: 0.88rem;
+      padding: 0.38rem 0.85rem;
+    }
+
     .modal-backdrop {
       display: none;
       position: fixed;
@@ -626,6 +661,7 @@
           <span class="sync-dot" id="syncDot"></span>
           <span id="syncText">Connecting...</span>
         </div>
+        <button class="btn btn-outline-light" id="displayModeBtn">Display Mode</button>
         <button class="btn btn-gold" id="loginBtn">Admin Sign In</button>
         <button class="btn btn-outline-light" id="logoutBtn" style="display:none;">Sign Out</button>
       </div>
@@ -764,6 +800,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const urlStaffId = urlParams.get("staff") || "";
     const urlToken = urlParams.get("token") || "";
+    let displayModeActive = urlParams.get("display") === "1";
     let showFullBoardInSelfMode = false;
 
     function generateToken() {
@@ -794,6 +831,7 @@
     const personalBanner = document.getElementById("personalBanner");
     const personalBannerTitle = document.getElementById("personalBannerTitle");
     const showAllBoardBtn = document.getElementById("showAllBoardBtn");
+    const displayModeBtn = document.getElementById("displayModeBtn");
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const modeIndicator = document.getElementById("modeIndicator");
@@ -890,12 +928,23 @@
     );
 
     function updateModeUI() {
+      document.body.classList.toggle("display-mode", displayModeActive);
+      displayModeBtn.textContent = displayModeActive ? "Exit Display" : "Display Mode";
+
       const targetPerson = urlStaffId && staffData[urlStaffId]
         ? { id: urlStaffId, ...staffData[urlStaffId] }
         : null;
       const selfMode = targetPerson && isSelfAuthorized(targetPerson);
 
-      if (currentUser) {
+      if (displayModeActive) {
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "none";
+        addStaffBtn.style.display = "none";
+        resetAllInBtn.style.display = "none";
+        personalBanner.classList.remove("active");
+        modeIndicator.className = "mode-badge mode-display";
+        modeIndicator.textContent = "Front-Desk Display Mode (Read-Only Live Board)";
+      } else if (currentUser) {
         loginBtn.style.display = "none";
         logoutBtn.style.display = "inline-flex";
         addStaffBtn.style.display = "inline-flex";
@@ -923,6 +972,12 @@
         modeIndicator.textContent = "Public View Mode (Live Sync Active)";
       }
     }
+
+    displayModeBtn.addEventListener("click", () => {
+      displayModeActive = !displayModeActive;
+      updateModeUI();
+      renderBoard();
+    });
 
     showAllBoardBtn.addEventListener("click", () => {
       showFullBoardInSelfMode = !showFullBoardInSelfMode;
@@ -980,9 +1035,9 @@
       const hasValidSelfLink = entries.some((p) => isSelfAuthorized(p));
 
       let visibleEntries = entries;
-      if (hasValidSelfLink && !currentUser && !showFullBoardInSelfMode) {
+      if (hasValidSelfLink && !currentUser && !displayModeActive && !showFullBoardInSelfMode) {
         visibleEntries = entries.filter((p) => p.id === urlStaffId);
-      } else if (searchFilter) {
+      } else if (searchFilter && !displayModeActive) {
         const q = searchFilter.toLowerCase();
         visibleEntries = entries.filter((s) =>
           (s.name && s.name.toLowerCase().includes(q)) ||
@@ -998,8 +1053,8 @@
         const statusLabel =
           status === "in" ? "IN" : status === "meeting" ? "MEETING / CLASS" : "OUT";
 
-        const isSelfCard = isSelfAuthorized(person);
-        const canEditCard = Boolean(currentUser) || isSelfCard;
+        const isSelfCard = !displayModeActive && isSelfAuthorized(person);
+        const canEditCard = !displayModeActive && (Boolean(currentUser) || isSelfCard);
 
         const card = document.createElement("article");
         card.className = `staff-card status-${status} ${isSelfCard ? "self-highlight" : ""}`;
@@ -1065,7 +1120,7 @@
 
     staffGrid.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action]");
-      if (!btn) return;
+      if (!btn || displayModeActive) return;
 
       const action = btn.dataset.action;
       const id = btn.dataset.id;
