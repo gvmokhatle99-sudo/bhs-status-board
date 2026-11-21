@@ -308,6 +308,38 @@
       align-items: center;
     }
 
+    .filter-tabs {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      background: #f1f5f9;
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .filter-tab {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .filter-tab:hover {
+      color: var(--navy);
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .filter-tab.active {
+      background: var(--navy);
+      color: #fff;
+    }
+
     .search-input {
       padding: 0.5rem 0.8rem;
       border: 1px solid var(--border);
@@ -320,6 +352,17 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
       gap: 1rem;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      background: var(--card);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 2rem 1rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
     }
 
     .staff-card {
@@ -704,6 +747,12 @@
       </div>
 
       <div class="toolbar-actions">
+        <div class="filter-tabs" id="filterTabs" role="group" aria-label="Filter staff by status">
+          <button type="button" class="filter-tab active" data-filter="all">All</button>
+          <button type="button" class="filter-tab" data-filter="in">IN</button>
+          <button type="button" class="filter-tab" data-filter="meeting">MEETING</button>
+          <button type="button" class="filter-tab" data-filter="out">OUT</button>
+        </div>
         <input type="text" id="searchInput" class="search-input" placeholder="Filter staff by name or note..." />
         <button class="btn btn-teal" id="addStaffBtn" style="display:none;">+ Add Staff</button>
         <button class="btn btn-ghost" id="resetAllInBtn" style="display:none;">Mark All In</button>
@@ -823,6 +872,7 @@
     let currentUser = null;
     let staffData = {};
     let searchFilter = "";
+    let statusFilter = "all";
 
     const staffGrid = document.getElementById("staffGrid");
     const syncDot = document.getElementById("syncDot");
@@ -835,6 +885,7 @@
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const modeIndicator = document.getElementById("modeIndicator");
+    const filterTabs = document.getElementById("filterTabs");
     const addStaffBtn = document.getElementById("addStaffBtn");
     const resetAllInBtn = document.getElementById("resetAllInBtn");
     const searchInput = document.getElementById("searchInput");
@@ -886,6 +937,12 @@
         person.token &&
         person.token === urlToken
       );
+    }
+
+    function syncFilterTabButtons() {
+      filterTabs.querySelectorAll(".filter-tab").forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.filter === statusFilter);
+      });
     }
 
     const connectedRef = ref(db, ".info/connected");
@@ -975,7 +1032,19 @@
 
     displayModeBtn.addEventListener("click", () => {
       displayModeActive = !displayModeActive;
+      if (displayModeActive) {
+        statusFilter = "all";
+        syncFilterTabButtons();
+      }
       updateModeUI();
+      renderBoard();
+    });
+
+    filterTabs.addEventListener("click", (e) => {
+      const tab = e.target.closest(".filter-tab");
+      if (!tab) return;
+      statusFilter = tab.dataset.filter || "all";
+      syncFilterTabButtons();
       renderBoard();
     });
 
@@ -1037,16 +1106,29 @@
       let visibleEntries = entries;
       if (hasValidSelfLink && !currentUser && !displayModeActive && !showFullBoardInSelfMode) {
         visibleEntries = entries.filter((p) => p.id === urlStaffId);
-      } else if (searchFilter && !displayModeActive) {
-        const q = searchFilter.toLowerCase();
-        visibleEntries = entries.filter((s) =>
-          (s.name && s.name.toLowerCase().includes(q)) ||
-          (s.role && s.role.toLowerCase().includes(q)) ||
-          (s.note && s.note.toLowerCase().includes(q))
-        );
+      } else {
+        if (!displayModeActive && statusFilter !== "all") {
+          visibleEntries = visibleEntries.filter((s) => (s.status || "in") === statusFilter);
+        }
+        if (searchFilter && !displayModeActive) {
+          const q = searchFilter.toLowerCase();
+          visibleEntries = visibleEntries.filter((s) =>
+            (s.name && s.name.toLowerCase().includes(q)) ||
+            (s.role && s.role.toLowerCase().includes(q)) ||
+            (s.note && s.note.toLowerCase().includes(q))
+          );
+        }
       }
 
       staffGrid.innerHTML = "";
+
+      if (visibleEntries.length === 0) {
+        const emptyEl = document.createElement("div");
+        emptyEl.className = "empty-state";
+        emptyEl.textContent = "No staff members match the current filter.";
+        staffGrid.appendChild(emptyEl);
+        return;
+      }
 
       visibleEntries.forEach((person) => {
         const status = person.status || "in";
